@@ -1,0 +1,14 @@
+
+# Python
+__pycache__/
+*.pyc
+.DS_Store
+
+# Streamlit cache
+.streamlit/secrets.toml
+.streamlit/*.json
+
+# Data files (optionnel si confidentiel)
+data/*.xlsx
+data/*.xls
+data/*.csv
