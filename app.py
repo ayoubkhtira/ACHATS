@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 from io import BytesIO
 
+
 # ============================================================
 # CONFIGURATION PAGE
 # ============================================================
@@ -13,13 +14,14 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+
 # ============================================================
-# CSS + FLATICON UICONS
+# CSS + FLATICON
 # ============================================================
 
 st.markdown("""
-<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-bold-rounded/css/uicons-bold-rounded.css'>
-<link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-bold-rounded/css/uicons-bold-rounded.css">
+<link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css">
 
 <style>
     .main {
@@ -231,22 +233,6 @@ st.markdown("""
         line-height: 1.55;
     }
 
-    .success-box {
-        background-color: #ecfdf5;
-        border: 1px solid #bbf7d0;
-        color: #065f46;
-        padding: 15px 18px;
-        border-radius: 14px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 9px;
-    }
-
-    .success-box i {
-        color: #059669;
-    }
-
     .warning-box {
         background-color: #fffbeb;
         border: 1px solid #fde68a;
@@ -257,10 +243,6 @@ st.markdown("""
         display: flex;
         align-items: center;
         gap: 9px;
-    }
-
-    .warning-box i {
-        color: #d97706;
     }
 
     .footer {
@@ -379,7 +361,7 @@ def metric_card(label, value, help_text="", color="#2563eb"):
     )
 
 
-def download_excel_button(df, filename, label):
+def download_excel_button(df, filename, label, key):
     output = BytesIO()
 
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
@@ -389,7 +371,8 @@ def download_excel_button(df, filename, label):
         label=label,
         data=output.getvalue(),
         file_name=filename,
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        key=key
     )
 
 
@@ -512,6 +495,23 @@ def sidebar_title(icon_class, title):
     )
 
 
+def show_plotly_chart(fig, key):
+    st.plotly_chart(
+        fig,
+        use_container_width=True,
+        key=key
+    )
+
+
+def show_dataframe(df, key, height=420):
+    st.dataframe(
+        df,
+        use_container_width=True,
+        height=height,
+        key=key
+    )
+
+
 # ============================================================
 # HEADER
 # ============================================================
@@ -553,7 +553,8 @@ with st.sidebar:
 
     uploaded_file = st.file_uploader(
         "Importer le fichier Excel",
-        type=["xlsx", "xls"]
+        type=["xlsx", "xls"],
+        key="upload_excel_achats"
     )
 
     st.markdown("---")
@@ -649,7 +650,7 @@ if uploaded_file is None:
 
 
 # ============================================================
-# LECTURE EXCEL CORRIGÉE
+# LECTURE EXCEL
 # ============================================================
 
 try:
@@ -668,13 +669,15 @@ with st.sidebar:
     demande_sheet = st.selectbox(
         "Feuille des demandes d'achat",
         options=["Aucune"] + sheet_names,
-        index=1 if len(sheet_names) >= 1 else 0
+        index=1 if len(sheet_names) >= 1 else 0,
+        key="select_sheet_demandes"
     )
 
     commande_sheet = st.selectbox(
         "Feuille des commandes achats",
         options=["Aucune"] + sheet_names,
-        index=2 if len(sheet_names) >= 2 else 0
+        index=2 if len(sheet_names) >= 2 else 0,
+        key="select_sheet_commandes"
     )
 
 
@@ -695,7 +698,7 @@ except Exception as e:
 
 
 # ============================================================
-# MAPPING COLONNES DEMANDES
+# MAPPING DEMANDES
 # ============================================================
 
 dem_col_da = find_column(df_demandes, ["Dem.achat", "Demande achat", "DA"])
@@ -717,7 +720,7 @@ if not df_demandes.empty:
 
 
 # ============================================================
-# MAPPING COLONNES COMMANDES
+# MAPPING COMMANDES
 # ============================================================
 
 cmd_col_article = find_column(df_commandes, ["Article"])
@@ -749,7 +752,7 @@ if not df_commandes.empty:
 
 
 # ============================================================
-# TABS PRINCIPAUX
+# TABS
 # ============================================================
 
 tab_overview, tab_demandes, tab_commandes, tab_compare, tab_data = st.tabs([
@@ -762,7 +765,7 @@ tab_overview, tab_demandes, tab_commandes, tab_compare, tab_data = st.tabs([
 
 
 # ============================================================
-# TAB 1 - VUE GLOBALE
+# TAB VUE GLOBALE
 # ============================================================
 
 with tab_overview:
@@ -801,7 +804,7 @@ with tab_overview:
                 text="Nombre"
             )
             fig.update_layout(yaxis={"categoryorder": "total ascending"})
-            st.plotly_chart(fig, use_container_width=True)
+            show_plotly_chart(fig, "chart_overview_top_gac_demandes")
         else:
             st.info("Aucune donnée demande exploitable pour le graphique GAc.")
 
@@ -818,13 +821,13 @@ with tab_overview:
                 text="Total"
             )
             fig.update_layout(yaxis={"categoryorder": "total ascending"})
-            st.plotly_chart(fig, use_container_width=True)
+            show_plotly_chart(fig, "chart_overview_top_fournisseurs_montant")
         else:
             st.info("Aucune donnée commande exploitable pour le graphique fournisseurs.")
 
 
 # ============================================================
-# TAB 2 - DEMANDES
+# TAB DEMANDES
 # ============================================================
 
 with tab_demandes:
@@ -842,25 +845,29 @@ with tab_demandes:
             if dem_col_gac:
                 dem_filters[dem_col_gac] = st.multiselect(
                     "Filtrer par GAc",
-                    get_unique_values(df_demandes, dem_col_gac)
+                    get_unique_values(df_demandes, dem_col_gac),
+                    key="filter_dem_gac"
                 )
 
             if dem_col_demandeur:
                 dem_filters[dem_col_demandeur] = st.multiselect(
                     "Filtrer par demandeur",
-                    get_unique_values(df_demandes, dem_col_demandeur)
+                    get_unique_values(df_demandes, dem_col_demandeur),
+                    key="filter_dem_demandeur"
                 )
 
             if dem_col_createur:
                 dem_filters[dem_col_createur] = st.multiselect(
                     "Filtrer par créateur",
-                    get_unique_values(df_demandes, dem_col_createur)
+                    get_unique_values(df_demandes, dem_col_createur),
+                    key="filter_dem_createur"
                 )
 
             if dem_col_div:
                 dem_filters[dem_col_div] = st.multiselect(
                     "Filtrer par division",
-                    get_unique_values(df_demandes, dem_col_div)
+                    get_unique_values(df_demandes, dem_col_div),
+                    key="filter_dem_division"
                 )
 
             dem_date_range = None
@@ -873,7 +880,8 @@ with tab_demandes:
                     "Période Date DA",
                     value=(min_date, max_date),
                     min_value=min_date,
-                    max_value=max_date
+                    max_value=max_date,
+                    key="filter_dem_date_da"
                 )
 
         df_dem_filtered = df_demandes.copy()
@@ -915,7 +923,7 @@ with tab_demandes:
                     title="Nombre de demandes par division",
                     text="Nombre"
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                show_plotly_chart(fig, "chart_demandes_par_division")
 
             elif dem_col_gac:
                 data = safe_group_count(df_dem_filtered, dem_col_gac, dem_col_da, 15)
@@ -927,7 +935,7 @@ with tab_demandes:
                     title="Nombre de demandes par GAc",
                     text="Nombre"
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                show_plotly_chart(fig, "chart_demandes_par_gac")
 
             else:
                 st.info("Colonne Division ou GAc non disponible.")
@@ -945,7 +953,7 @@ with tab_demandes:
                     text="Nombre"
                 )
                 fig.update_layout(yaxis={"categoryorder": "total ascending"})
-                st.plotly_chart(fig, use_container_width=True)
+                show_plotly_chart(fig, "chart_demandes_top_articles_designation")
             else:
                 st.info("Colonne Désignation non disponible.")
 
@@ -964,7 +972,7 @@ with tab_demandes:
                     text="Nombre"
                 )
                 fig.update_layout(yaxis={"categoryorder": "total ascending"})
-                st.plotly_chart(fig, use_container_width=True)
+                show_plotly_chart(fig, "chart_demandes_top_demandeurs")
 
         with g4:
             if dem_col_date_da:
@@ -986,7 +994,7 @@ with tab_demandes:
                         markers=True,
                         title="Évolution mensuelle des demandes"
                     )
-                    st.plotly_chart(fig, use_container_width=True)
+                    show_plotly_chart(fig, "chart_demandes_evolution_mensuelle")
                 else:
                     st.info("Aucune donnée temporelle disponible.")
 
@@ -994,17 +1002,18 @@ with tab_demandes:
         data_quality_card(df_dem_filtered)
 
         sub_section_title("fi fi-rr-table", "Données demandes filtrées")
-        st.dataframe(df_dem_filtered, use_container_width=True, height=420)
+        show_dataframe(df_dem_filtered, key="df_demandes_filtrees", height=420)
 
         download_excel_button(
             df_dem_filtered,
             "demandes_filtrees.xlsx",
-            "Télécharger les demandes filtrées"
+            "Télécharger les demandes filtrées",
+            key="download_demandes_filtrees"
         )
 
 
 # ============================================================
-# TAB 3 - COMMANDES
+# TAB COMMANDES
 # ============================================================
 
 with tab_commandes:
@@ -1022,25 +1031,29 @@ with tab_commandes:
             if cmd_col_fournisseur:
                 cmd_filters[cmd_col_fournisseur] = st.multiselect(
                     "Filtrer par fournisseur",
-                    get_unique_values(df_commandes, cmd_col_fournisseur)
+                    get_unique_values(df_commandes, cmd_col_fournisseur),
+                    key="filter_cmd_fournisseur"
                 )
 
             if cmd_col_div:
                 cmd_filters[cmd_col_div] = st.multiselect(
                     "Filtrer par division commande",
-                    get_unique_values(df_commandes, cmd_col_div)
+                    get_unique_values(df_commandes, cmd_col_div),
+                    key="filter_cmd_division"
                 )
 
             if cmd_col_gac:
                 cmd_filters[cmd_col_gac] = st.multiselect(
                     "Filtrer par GAc commande",
-                    get_unique_values(df_commandes, cmd_col_gac)
+                    get_unique_values(df_commandes, cmd_col_gac),
+                    key="filter_cmd_gac"
                 )
 
             if cmd_col_devise:
                 cmd_filters[cmd_col_devise] = st.multiselect(
                     "Filtrer par devise",
-                    get_unique_values(df_commandes, cmd_col_devise)
+                    get_unique_values(df_commandes, cmd_col_devise),
+                    key="filter_cmd_devise"
                 )
 
             cmd_date_range = None
@@ -1053,7 +1066,8 @@ with tab_commandes:
                     "Période Date document",
                     value=(min_date, max_date),
                     min_value=min_date,
-                    max_value=max_date
+                    max_value=max_date,
+                    key="filter_cmd_date_doc"
                 )
 
         df_cmd_filtered = df_commandes.copy()
@@ -1097,7 +1111,7 @@ with tab_commandes:
                     text="Total"
                 )
                 fig.update_layout(yaxis={"categoryorder": "total ascending"})
-                st.plotly_chart(fig, use_container_width=True)
+                show_plotly_chart(fig, "chart_commandes_top_fournisseurs_montant")
             else:
                 st.info("Colonne fournisseur non disponible.")
 
@@ -1114,7 +1128,7 @@ with tab_commandes:
                     text="Total"
                 )
                 fig.update_layout(yaxis={"categoryorder": "total ascending"})
-                st.plotly_chart(fig, use_container_width=True)
+                show_plotly_chart(fig, "chart_commandes_top_articles_montant")
             else:
                 st.info("Colonne désignation non disponible.")
 
@@ -1131,7 +1145,7 @@ with tab_commandes:
                     title="Répartition du montant par division",
                     hole=0.45
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                show_plotly_chart(fig, "chart_commandes_repartition_division")
 
             elif cmd_col_gac:
                 data = safe_group_sum(df_cmd_filtered, cmd_col_gac, "Montant estimé", 15)
@@ -1143,7 +1157,7 @@ with tab_commandes:
                     title="Répartition du montant par GAc",
                     hole=0.45
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                show_plotly_chart(fig, "chart_commandes_repartition_gac")
 
         with g4:
             if cmd_col_date:
@@ -1165,7 +1179,7 @@ with tab_commandes:
                         markers=True,
                         title="Évolution mensuelle des montants commandes"
                     )
-                    st.plotly_chart(fig, use_container_width=True)
+                    show_plotly_chart(fig, "chart_commandes_evolution_mensuelle_montants")
                 else:
                     st.info("Aucune donnée temporelle disponible.")
 
@@ -1177,35 +1191,36 @@ with tab_commandes:
             if cmd_col_fournisseur:
                 top_nb_cmd = safe_group_count(df_cmd_filtered, cmd_col_fournisseur, cmd_col_doc, 10)
                 st.markdown("#### Fournisseurs par nombre de commandes")
-                st.dataframe(top_nb_cmd, use_container_width=True, height=330)
+                show_dataframe(top_nb_cmd, key="df_top_fournisseurs_nb_commandes", height=330)
 
         with c2:
             if cmd_col_designation and cmd_col_quantite:
                 top_qty = safe_group_sum(df_cmd_filtered, cmd_col_designation, cmd_col_quantite, 10)
                 st.markdown("#### Articles par quantité")
-                st.dataframe(top_qty, use_container_width=True, height=330)
+                show_dataframe(top_qty, key="df_top_articles_quantite", height=330)
 
         with c3:
             if cmd_col_gac:
                 top_gac = safe_group_sum(df_cmd_filtered, cmd_col_gac, "Montant estimé", 10)
                 st.markdown("#### GAc par montant")
-                st.dataframe(top_gac, use_container_width=True, height=330)
+                show_dataframe(top_gac, key="df_top_gac_montant", height=330)
 
         sub_section_title("fi fi-rr-database", "Qualité des données commandes")
         data_quality_card(df_cmd_filtered)
 
         sub_section_title("fi fi-rr-table", "Données commandes filtrées")
-        st.dataframe(df_cmd_filtered, use_container_width=True, height=420)
+        show_dataframe(df_cmd_filtered, key="df_commandes_filtrees", height=420)
 
         download_excel_button(
             df_cmd_filtered,
             "commandes_filtrees.xlsx",
-            "Télécharger les commandes filtrées"
+            "Télécharger les commandes filtrées",
+            key="download_commandes_filtrees"
         )
 
 
 # ============================================================
-# TAB 4 - ANALYSE CROISÉE
+# TAB ANALYSE CROISÉE
 # ============================================================
 
 with tab_compare:
@@ -1256,7 +1271,7 @@ with tab_compare:
             text="Nombre",
             title="Couverture entre demandes et commandes"
         )
-        st.plotly_chart(fig, use_container_width=True)
+        show_plotly_chart(fig, "chart_analyse_croisee_couverture_articles")
 
         if articles_non_commandes:
             sub_section_title("fi fi-rr-triangle-warning", "Articles demandés mais non commandés")
@@ -1265,32 +1280,29 @@ with tab_compare:
                 df_demandes[dem_col_article].astype(str).isin(articles_non_commandes)
             ]
 
-            st.dataframe(non_cmd_df, use_container_width=True, height=350)
+            show_dataframe(non_cmd_df, key="df_articles_demandes_non_commandes", height=350)
 
             download_excel_button(
                 non_cmd_df,
                 "articles_demandes_non_commandes.xlsx",
-                "Télécharger la liste"
+                "Télécharger la liste",
+                key="download_articles_non_commandes"
             )
         else:
             st.success("Tous les articles demandés existent dans les commandes.")
 
 
 # ============================================================
-# TAB 5 - DONNÉES BRUTES
+# TAB DONNÉES
 # ============================================================
 
 with tab_data:
     section_title("fi fi-rr-folder-open", "Exploration des données brutes")
 
-    data_tab1, data_tab2 = st.tabs(["Demandes", "Commandes"])
-
-    with data_tab1:
-        if df_demandes.empty:
-            st.info("Aucune donnée demande disponible.")
+    data_tab1, data_tab2 = st.tabs(["Demandes", "Command       st.info("Aucune donnée demande disponible.")
         else:
             sub_section_title("fi fi-rr-table", "Aperçu demandes")
-            st.dataframe(df_demandes, use_container_width=True, height=500)
+            show_dataframe(df_demandes, key="df_demandes_brutes", height=500)
 
             sub_section_title("fi fi-rr-list", "Colonnes détectées demandes")
             st.write(list(df_demandes.columns))
@@ -1300,13 +1312,15 @@ with tab_data:
             st.info("Aucune donnée commande disponible.")
         else:
             sub_section_title("fi fi-rr-table", "Aperçu commandes")
-            st.dataframe(df_commandes, use_container_width=True, height=500)
+            show_dataframe(df_commandes, key="df_commandes_brutes", height=500)
 
             sub_section_title("fi fi-rr-list", "Colonnes détectées commandes")
             st.write(list(df_commandes.columns))
 
 
-# ======================================================================
+# ============================================================
+# FOOTER
+# ============================================================
 
 st.markdown("""
 <div class="footer">
