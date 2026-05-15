@@ -527,7 +527,7 @@ st.markdown("""
         <div>
             <h1>Platforme Analyse Achats </h1>
             <p>
-                Ciments Du Maroc.
+                Ciments Du Maroc
             </p>
         </div>
     </div>
