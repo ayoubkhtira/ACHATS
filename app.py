@@ -8,7 +8,7 @@ from io import BytesIO
 # ============================================================
 
 st.set_page_config(
-    page_title="Dashboard Achats",
+    page_title="Platforme de similation Achats",
     page_icon="🛒",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -525,10 +525,9 @@ st.markdown("""
             <i class="fi fi-br-shopping-cart"></i>
         </span>
         <div>
-            <h1>Dashboard Achats — Demandes & Commandes</h1>
+            <h1>Platforme Analyse Achats </h1>
             <p>
-                Plateforme professionnelle pour piloter les demandes d’achat, commandes,
-                fournisseurs, articles, divisions, GAc, volumes et montants à partir d’un fichier Excel.
+                Ciments Du Maroc.
             </p>
         </div>
     </div>
@@ -1269,6 +1268,6 @@ with tab_data:
 
 st.markdown("""
 <div class="footer">
-    Dashboard Achats — Développé avec Streamlit, Pandas et Plotly · Icons by Flaticon
+    Platforme de simulation Achats  — Dévellopé par AYOUB KHTIRA - Ciment du maroc 
 </div>
 """, unsafe_allow_html=True)
