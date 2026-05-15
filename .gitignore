@@ -1,14 +1,38 @@
-
 # Python
 __pycache__/
-*.pyc
-.DS_Store
+*.py[cod]
+*.pyo
+*.pyd
+*.so
 
-# Streamlit cache
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# Streamlit
 .streamlit/secrets.toml
-.streamlit/*.json
 
-# Data files (optionnel si confidentiel)
-data/*.xlsx
-data/*.xls
-data/*.csv
+# Jupyter
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Excel / data files
+*.xlsx
+*.xls
+*.csv
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
