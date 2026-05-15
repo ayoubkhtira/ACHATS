@@ -1,38 +1,16 @@
-# Python
 __pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.so
-
-# Virtual environments
+*.pyc
 venv/
-env/
 .venv/
-ENV/
+env/
 
-# Streamlit
 .streamlit/secrets.toml
 
-# Jupyter
-.ipynb_checkpoints/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-
-# Excel / data files
 *.xlsx
 *.xls
 *.csv
 
-# Logs
-*.log
-
-# Temporary files
-tmp/
-temp/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
