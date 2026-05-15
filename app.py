@@ -9,61 +9,133 @@ from io import BytesIO
 
 st.set_page_config(
     page_title="Dashboard Achats",
-    page_icon="📦",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # ============================================================
-# CSS DESIGN MODERNE
+# CSS + FLATICON UICONS
 # ============================================================
 
 st.markdown("""
+https://cdn-uicons.flaticon.com/2.6.0/uicons-bold-rounded/css/uicons-bold-rounded.css
+https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css
+
 <style>
     .main {
         background-color: #f7f9fc;
     }
 
     .block-container {
-        padding-top: 1.5rem;
+        padding-top: 1.4rem;
         padding-bottom: 2rem;
     }
 
     .app-header {
         background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-        padding: 28px 32px;
-        border-radius: 22px;
-        margin-bottom: 25px;
+        padding: 30px 34px;
+        border-radius: 24px;
+        margin-bottom: 26px;
         color: white;
-        box-shadow: 0px 12px 30px rgba(15, 23, 42, 0.18);
+        box-shadow: 0px 14px 34px rgba(15, 23, 42, 0.18);
+    }
+
+    .title-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .header-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.14);
+        color: white;
+        font-size: 24px;
+        flex-shrink: 0;
     }
 
     .app-header h1 {
         font-size: 34px;
         margin-bottom: 8px;
-        font-weight: 800;
+        font-weight: 850;
+        letter-spacing: -0.4px;
     }
 
     .app-header p {
         font-size: 15px;
         color: #dbeafe;
         margin-bottom: 0;
+        line-height: 1.55;
     }
 
     .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
         font-size: 22px;
-        font-weight: 800;
+        font-weight: 850;
         color: #0f172a;
         margin-top: 10px;
-        margin-bottom: 15px;
+        margin-bottom: 18px;
+        letter-spacing: -0.2px;
+    }
+
+    .section-title i {
+        color: #2563eb;
+        font-size: 21px;
+    }
+
+    .sub-section-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 18px;
+        font-weight: 800;
+        color: #1e293b;
+        margin-top: 16px;
+        margin-bottom: 12px;
+    }
+
+    .sub-section-title i {
+        color: #475569;
+        font-size: 18px;
     }
 
     .card {
         background-color: white;
-        padding: 20px;
-        border-radius: 18px;
-        box-shadow: 0px 8px 22px rgba(15, 23, 42, 0.06);
+        padding: 22px;
+        border-radius: 20px;
+        box-shadow: 0px 8px 24px rgba(15, 23, 42, 0.06);
         border: 1px solid #e5e7eb;
+        min-height: 148px;
+    }
+
+    .card h4 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #0f172a;
+        margin-bottom: 10px;
+        font-size: 17px;
+        font-weight: 850;
+    }
+
+    .pro-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        background: rgba(37, 99, 235, 0.10);
+        color: #2563eb;
+        font-size: 17px;
+        flex-shrink: 0;
     }
 
     .metric-card {
@@ -72,26 +144,28 @@ st.markdown("""
         border-radius: 18px;
         box-shadow: 0px 8px 22px rgba(15, 23, 42, 0.06);
         border-left: 5px solid #2563eb;
-        min-height: 120px;
+        min-height: 122px;
     }
 
     .metric-label {
         font-size: 13px;
         color: #64748b;
-        font-weight: 600;
+        font-weight: 700;
         margin-bottom: 8px;
     }
 
     .metric-value {
-        font-size: 27px;
+        font-size: 28px;
         color: #0f172a;
-        font-weight: 850;
+        font-weight: 900;
         margin-bottom: 2px;
+        letter-spacing: -0.3px;
     }
 
     .metric-help {
         font-size: 12px;
         color: #94a3b8;
+        line-height: 1.4;
     }
 
     .stTabs [data-baseweb="tab-list"] {
@@ -103,12 +177,14 @@ st.markdown("""
         border-radius: 14px;
         padding: 12px 20px;
         border: 1px solid #e5e7eb;
-        font-weight: 700;
+        font-weight: 750;
+        color: #334155;
     }
 
     .stTabs [aria-selected="true"] {
         background-color: #1e3a8a !important;
         color: white !important;
+        border-color: #1e3a8a !important;
     }
 
     div[data-testid="stSidebar"] {
@@ -127,27 +203,57 @@ st.markdown("""
         font-weight: 700;
     }
 
+    .sidebar-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: 850;
+        margin-bottom: 8px;
+        color: white;
+    }
+
+    .sidebar-title i {
+        color: #93c5fd;
+        font-size: 20px;
+    }
+
+    .sidebar-note {
+        color: #cbd5e1;
+        font-size: 13px;
+        line-height: 1.5;
+        margin-bottom: 12px;
+    }
+
     .small-note {
         font-size: 13px;
         color: #64748b;
-    }
-
-    .success-box {
-        background-color: #ecfdf5;
-        border: 1px solid #bbf7d0;
-        color: #065f46;
-        padding: 14px 18px;
-        border-radius: 14px;
-        font-weight: 600;
+        line-height: 1.55;
     }
 
     .warning-box {
         background-color: #fffbeb;
         border: 1px solid #fde68a;
         color: #92400e;
-        padding: 14px 18px;
+        padding: 15px 18px;
         border-radius: 14px;
-        font-weight: 600;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .warning-box i {
+        color: #d97706;
+    }
+
+    .footer {
+        margin-top: 40px;
+        padding-top: 16px;
+        border-top: 1px solid #e5e7eb;
+        color: #94a3b8;
+        font-size: 12px;
+        text-align: center;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -159,28 +265,16 @@ st.markdown("""
 
 @st.cache_data(show_spinner=False)
 def get_sheet_names(file_bytes):
-    """
-    Correction importante :
-    On ne retourne pas pd.ExcelFile directement car ce n'est pas sérialisable.
-    On retourne seulement la liste des feuilles.
-    """
     excel_file = pd.ExcelFile(BytesIO(file_bytes))
     return excel_file.sheet_names
 
 
 @st.cache_data(show_spinner=False)
 def read_sheet(file_bytes, sheet_name):
-    """
-    Lecture d'une feuille Excel à partir des bytes du fichier uploadé.
-    Compatible avec st.cache_data.
-    """
     return pd.read_excel(BytesIO(file_bytes), sheet_name=sheet_name)
 
 
 def normalize_columns(df):
-    """
-    Nettoyage simple des noms de colonnes.
-    """
     df = df.copy()
     df.columns = (
         df.columns.astype(str)
@@ -193,9 +287,6 @@ def normalize_columns(df):
 
 
 def find_column(df, possible_names):
-    """
-    Recherche intelligente d'une colonne même si le nom varie légèrement.
-    """
     if df.empty:
         return None
 
@@ -276,7 +367,7 @@ def download_excel_button(df, filename, label):
     output = BytesIO()
 
     with pd.ExcelWriter(output, engine="openpyxl") as writer:
-        df.to_excel(writer, index=False, sheet_name="Données filtrées")
+        df.to_excel(writer, index=False, sheet_name="Donnees filtrees")
 
     st.download_button(
         label=label,
@@ -302,11 +393,7 @@ def safe_group_count(df, group_col, count_col=None, top_n=15):
             .head(top_n)
         )
     else:
-        result = (
-            temp[group_col]
-            .value_counts()
-            .reset_index()
-        )
+        result = temp[group_col].value_counts().reset_index()
         result.columns = [group_col, "Nombre"]
         result = result.head(top_n)
 
@@ -373,18 +460,73 @@ def get_unique_values(df, col):
     return []
 
 
+def section_title(icon_class, title):
+    st.markdown(
+        f"""
+        <div class="section-title">
+            <i class="{icon_class}"></i>
+            <span>{title}</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def sub_section_title(icon_class, title):
+    st.markdown(
+        f"""
+        <div class="sub-section-title">
+            <i class="{icon_class}"></i>
+            <span>{title}</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def sidebar_title(icon_class, title):
+    st.markdown(
+        f"""
+        <div class="sidebar-title">
+            <i class="{icon_class}"></i>
+            <span>{title}</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+def show_plotly_chart(fig, key):
+    """
+    Fonction pour éviter StreamlitDuplicateElementId.
+    Chaque graphique doit avoir une clé unique.
+    """
+    st.plotly_chart(
+        fig,
+        use_container_width=True,
+        key=key
+    )
+
+
 # ============================================================
 # HEADER
 # ============================================================
 
 st.markdown("""
 <div class="app-header">
-    <h1>📦 Dashboard Achats — Demandes & Commandes</h1>
-    <p>
-        Application de pilotage pour analyser les demandes d'achat, les commandes,
-        les fournisseurs, les articles, les divisions, les GAc et les montants achats
-        à partir d'un fichier Excel.
-    </p>
+    <div class="title-row">
+        <span class="header-icon">
+            <i class="fi fi-br-shopping-cart"></i>
+        </span>
+        <div>
+            <h1>Dashboard Achats — Demandes & Commandes</h1>
+            <p>
+                Plateforme de pilotage pour analyser les demandes d'achat, les commandes,
+                les fournisseurs, les articles, les divisions, les GAc et les montants achats
+                à partir d'un fichier Excel.
+            </p>
+        </div>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -394,16 +536,25 @@ st.markdown("""
 # ============================================================
 
 with st.sidebar:
-    st.markdown("## ⚙️ Paramètres")
-    st.markdown("Chargez votre fichier Excel contenant les demandes et/ou commandes achats.")
+    sidebar_title("fi fi-rr-settings-sliders", "Paramètres")
+
+    st.markdown(
+        """
+        <div class="sidebar-note">
+            Chargez votre fichier Excel contenant les demandes et/ou commandes achats.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
     uploaded_file = st.file_uploader(
-        "📤 Importer le fichier Excel",
+        "Importer le fichier Excel",
         type=["xlsx", "xls"]
     )
 
     st.markdown("---")
-    st.markdown("### Colonnes attendues")
+
+    sidebar_title("fi fi-rr-document", "Colonnes attendues")
 
     st.markdown("""
     **Demandes :**
@@ -442,18 +593,22 @@ with st.sidebar:
 if uploaded_file is None:
     st.markdown("""
     <div class="warning-box">
-        📌 Veuillez importer un fichier Excel pour démarrer l'analyse.
+        <i class="fi fi-rr-info"></i>
+        <span>Veuillez importer un fichier Excel pour démarrer l'analyse.</span>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("### ✅ Fonctionnalités de l'application")
+    sub_section_title("fi fi-rr-apps", "Fonctionnalités de l'application")
 
     f1, f2, f3 = st.columns(3)
 
     with f1:
         st.markdown("""
         <div class="card">
-            <h4>📄 Analyse des demandes</h4>
+            <h4>
+                <span class="pro-icon"><i class="fi fi-rr-file-invoice"></i></span>
+                Analyse des demandes
+            </h4>
             <p class="small-note">
                 Suivi des DA, articles demandés, demandeurs, GAc, quantités et évolution mensuelle.
             </p>
@@ -463,7 +618,10 @@ if uploaded_file is None:
     with f2:
         st.markdown("""
         <div class="card">
-            <h4>🧾 Analyse des commandes</h4>
+            <h4>
+                <span class="pro-icon"><i class="fi fi-rr-shopping-cart"></i></span>
+                Analyse des commandes
+            </h4>
             <p class="small-note">
                 Analyse des commandes, fournisseurs, montants, divisions, devises et articles commandés.
             </p>
@@ -473,7 +631,10 @@ if uploaded_file is None:
     with f3:
         st.markdown("""
         <div class="card">
-            <h4>🔎 Analyse croisée</h4>
+            <h4>
+                <span class="pro-icon"><i class="fi fi-rr-chart-histogram"></i></span>
+                Analyse croisée
+            </h4>
             <p class="small-note">
                 Comparaison entre articles demandés et articles commandés pour détecter les écarts.
             </p>
@@ -484,7 +645,7 @@ if uploaded_file is None:
 
 
 # ============================================================
-# LECTURE EXCEL CORRIGÉE
+# LECTURE EXCEL
 # ============================================================
 
 try:
@@ -498,7 +659,7 @@ except Exception as e:
 
 with st.sidebar:
     st.markdown("---")
-    st.markdown("## 📑 Feuilles Excel")
+    sidebar_title("fi fi-rr-folder-open", "Feuilles Excel")
 
     demande_sheet = st.selectbox(
         "Feuille des demandes d'achat",
@@ -573,7 +734,10 @@ if not df_commandes.empty:
     df_commandes = convert_numeric(df_commandes, [cmd_col_quantite, cmd_col_prix])
 
     if cmd_col_quantite and cmd_col_prix:
-        df_commandes["Montant estimé"] = df_commandes[cmd_col_quantite].fillna(0) * df_commandes[cmd_col_prix].fillna(0)
+        df_commandes["Montant estimé"] = (
+            df_commandes[cmd_col_quantite].fillna(0) *
+            df_commandes[cmd_col_prix].fillna(0)
+        )
     elif cmd_col_prix:
         df_commandes["Montant estimé"] = df_commandes[cmd_col_prix].fillna(0)
     else:
@@ -585,11 +749,11 @@ if not df_commandes.empty:
 # ============================================================
 
 tab_overview, tab_demandes, tab_commandes, tab_compare, tab_data = st.tabs([
-    "🏠 Vue globale",
-    "📄 Demandes d'achat",
-    "🧾 Commandes achats",
-    "🔎 Analyse croisée",
-    "🗂️ Données"
+    "Vue globale",
+    "Demandes d'achat",
+    "Commandes achats",
+    "Analyse croisée",
+    "Données"
 ])
 
 
@@ -598,7 +762,7 @@ tab_overview, tab_demandes, tab_commandes, tab_compare, tab_data = st.tabs([
 # ============================================================
 
 with tab_overview:
-    st.markdown('<div class="section-title">🏠 Vue globale du fichier importé</div>', unsafe_allow_html=True)
+    section_title("fi fi-br-home", "Vue globale du fichier importé")
 
     c1, c2, c3, c4 = st.columns(4)
 
@@ -616,7 +780,7 @@ with tab_overview:
     with c4:
         metric_card("Montant commandes", format_amount(montant_total), "Quantité × Prix net", "#f97316")
 
-    st.markdown("### 📊 Synthèse visuelle")
+    sub_section_title("fi fi-rr-chart-histogram", "Synthèse visuelle")
 
     col_left, col_right = st.columns(2)
 
@@ -633,7 +797,7 @@ with tab_overview:
                 text="Nombre"
             )
             fig.update_layout(yaxis={"categoryorder": "total ascending"})
-            st.plotly_chart(fig, use_container_width=True)
+            show_plotly_chart(fig, "overview_top_gac_demandes")
         else:
             st.info("Aucune donnée demande exploitable pour le graphique GAc.")
 
@@ -650,7 +814,7 @@ with tab_overview:
                 text="Total"
             )
             fig.update_layout(yaxis={"categoryorder": "total ascending"})
-            st.plotly_chart(fig, use_container_width=True)
+            show_plotly_chart(fig, "overview_top_fournisseurs_montant")
         else:
             st.info("Aucune donnée commande exploitable pour le graphique fournisseurs.")
 
@@ -660,14 +824,14 @@ with tab_overview:
 # ============================================================
 
 with tab_demandes:
-    st.markdown('<div class="section-title">📄 Analyse des demandes d’achat</div>', unsafe_allow_html=True)
+    section_title("fi fi-rr-file-invoice", "Analyse des demandes d’achat")
 
     if df_demandes.empty:
         st.warning("Aucune feuille de demandes sélectionnée ou feuille vide.")
     else:
         with st.sidebar:
             st.markdown("---")
-            st.markdown("## 📄 Filtres demandes")
+            sidebar_title("fi fi-rr-filter", "Filtres demandes")
 
             dem_filters = {}
 
@@ -732,7 +896,7 @@ with tab_demandes:
         with c4:
             metric_card("Quantité totale", format_number(total_quantite), "Somme des quantités", "#f97316")
 
-        st.markdown("### 📈 Analyses principales")
+        sub_section_title("fi fi-rr-chart-histogram", "Analyses principales")
 
         g1, g2 = st.columns(2)
 
@@ -747,7 +911,7 @@ with tab_demandes:
                     title="Nombre de demandes par division",
                     text="Nombre"
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                show_plotly_chart(fig, "demandes_par_division")
 
             elif dem_col_gac:
                 data = safe_group_count(df_dem_filtered, dem_col_gac, dem_col_da, 15)
@@ -759,7 +923,7 @@ with tab_demandes:
                     title="Nombre de demandes par GAc",
                     text="Nombre"
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                show_plotly_chart(fig, "demandes_par_gac")
 
             else:
                 st.info("Colonne Division ou GAc non disponible.")
@@ -777,7 +941,7 @@ with tab_demandes:
                     text="Nombre"
                 )
                 fig.update_layout(yaxis={"categoryorder": "total ascending"})
-                st.plotly_chart(fig, use_container_width=True)
+                show_plotly_chart(fig, "demandes_top_articles_designation")
             else:
                 st.info("Colonne Désignation non disponible.")
 
@@ -796,7 +960,7 @@ with tab_demandes:
                     text="Nombre"
                 )
                 fig.update_layout(yaxis={"categoryorder": "total ascending"})
-                st.plotly_chart(fig, use_container_width=True)
+                show_plotly_chart(fig, "demandes_top_demandeurs")
 
         with g4:
             if dem_col_date_da:
@@ -818,20 +982,20 @@ with tab_demandes:
                         markers=True,
                         title="Évolution mensuelle des demandes"
                     )
-                    st.plotly_chart(fig, use_container_width=True)
+                    show_plotly_chart(fig, "demandes_evolution_mensuelle")
                 else:
                     st.info("Aucune donnée temporelle disponible.")
 
-        st.markdown("### 🧮 Qualité des données demandes")
+        sub_section_title("fi fi-rr-database", "Qualité des données demandes")
         data_quality_card(df_dem_filtered)
 
-        st.markdown("### 📋 Données demandes filtrées")
+        sub_section_title("fi fi-rr-table", "Données demandes filtrées")
         st.dataframe(df_dem_filtered, use_container_width=True, height=420)
 
         download_excel_button(
             df_dem_filtered,
             "demandes_filtrees.xlsx",
-            "📥 Télécharger les demandes filtrées"
+            "Télécharger les demandes filtrées"
         )
 
 
@@ -840,14 +1004,14 @@ with tab_demandes:
 # ============================================================
 
 with tab_commandes:
-    st.markdown('<div class="section-title">🧾 Analyse des commandes achats</div>', unsafe_allow_html=True)
+    section_title("fi fi-rr-shopping-cart", "Analyse des commandes achats")
 
     if df_commandes.empty:
         st.warning("Aucune feuille de commandes sélectionnée ou feuille vide.")
     else:
         with st.sidebar:
             st.markdown("---")
-            st.markdown("## 🧾 Filtres commandes")
+            sidebar_title("fi fi-rr-filter", "Filtres commandes")
 
             cmd_filters = {}
 
@@ -912,7 +1076,7 @@ with tab_commandes:
         with c4:
             metric_card("Montant total", format_amount(total_montant), "Quantité × Prix net", "#f97316")
 
-        st.markdown("### 📊 Analyses fournisseurs, articles et divisions")
+        sub_section_title("fi fi-rr-chart-histogram", "Analyses fournisseurs, articles et divisions")
 
         g1, g2 = st.columns(2)
 
@@ -929,7 +1093,7 @@ with tab_commandes:
                     text="Total"
                 )
                 fig.update_layout(yaxis={"categoryorder": "total ascending"})
-                st.plotly_chart(fig, use_container_width=True)
+                show_plotly_chart(fig, "commandes_top_fournisseurs_montant")
             else:
                 st.info("Colonne fournisseur non disponible.")
 
@@ -946,7 +1110,7 @@ with tab_commandes:
                     text="Total"
                 )
                 fig.update_layout(yaxis={"categoryorder": "total ascending"})
-                st.plotly_chart(fig, use_container_width=True)
+                show_plotly_chart(fig, "commandes_top_articles_montant")
             else:
                 st.info("Colonne désignation non disponible.")
 
@@ -963,7 +1127,7 @@ with tab_commandes:
                     title="Répartition du montant par division",
                     hole=0.45
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                show_plotly_chart(fig, "commandes_repartition_division")
 
             elif cmd_col_gac:
                 data = safe_group_sum(df_cmd_filtered, cmd_col_gac, "Montant estimé", 15)
@@ -975,7 +1139,7 @@ with tab_commandes:
                     title="Répartition du montant par GAc",
                     hole=0.45
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                show_plotly_chart(fig, "commandes_repartition_gac")
 
         with g4:
             if cmd_col_date:
@@ -997,11 +1161,11 @@ with tab_commandes:
                         markers=True,
                         title="Évolution mensuelle des montants commandes"
                     )
-                    st.plotly_chart(fig, use_container_width=True)
+                    show_plotly_chart(fig, "commandes_evolution_mensuelle_montants")
                 else:
                     st.info("Aucune donnée temporelle disponible.")
 
-        st.markdown("### 🏆 Classements avancés")
+        sub_section_title("fi fi-rr-ranking-star", "Classements avancés")
 
         c1, c2, c3 = st.columns(3)
 
@@ -1023,16 +1187,16 @@ with tab_commandes:
                 st.markdown("#### GAc par montant")
                 st.dataframe(top_gac, use_container_width=True, height=330)
 
-        st.markdown("### 🧮 Qualité des données commandes")
+        sub_section_title("fi fi-rr-database", "Qualité des données commandes")
         data_quality_card(df_cmd_filtered)
 
-        st.markdown("### 📋 Données commandes filtrées")
+        sub_section_title("fi fi-rr-table", "Données commandes filtrées")
         st.dataframe(df_cmd_filtered, use_container_width=True, height=420)
 
         download_excel_button(
             df_cmd_filtered,
             "commandes_filtrees.xlsx",
-            "📥 Télécharger les commandes filtrées"
+            "Télécharger les commandes filtrées"
         )
 
 
@@ -1041,7 +1205,7 @@ with tab_commandes:
 # ============================================================
 
 with tab_compare:
-    st.markdown('<div class="section-title">🔎 Analyse croisée demandes vs commandes</div>', unsafe_allow_html=True)
+    section_title("fi fi-rr-search-alt", "Analyse croisée demandes vs commandes")
 
     if df_demandes.empty or df_commandes.empty:
         st.warning("L'analyse croisée nécessite les deux feuilles : demandes et commandes.")
@@ -1066,7 +1230,7 @@ with tab_compare:
         with c4:
             metric_card("Demandés non commandés", format_number(len(articles_non_commandes)), "Présents en DA mais absents en commande", "#ef4444")
 
-        st.markdown("### 📌 Couverture articles")
+        sub_section_title("fi fi-rr-chart-pie-alt", "Couverture articles")
 
         coverage_df = pd.DataFrame({
             "Catégorie": [
@@ -1088,10 +1252,10 @@ with tab_compare:
             text="Nombre",
             title="Couverture entre demandes et commandes"
         )
-        st.plotly_chart(fig, use_container_width=True)
+        show_plotly_chart(fig, "analyse_croisee_couverture_articles")
 
         if articles_non_commandes:
-            st.markdown("### ⚠️ Articles demandés mais non commandés")
+            sub_section_title("fi fi-rr-triangle-warning", "Articles demandés mais non commandés")
 
             non_cmd_df = df_demandes[
                 df_demandes[dem_col_article].astype(str).isin(articles_non_commandes)
@@ -1102,7 +1266,7 @@ with tab_compare:
             download_excel_button(
                 non_cmd_df,
                 "articles_demandes_non_commandes.xlsx",
-                "📥 Télécharger la liste"
+                "Télécharger la liste"
             )
         else:
             st.success("Tous les articles demandés existent dans les commandes.")
@@ -1113,26 +1277,37 @@ with tab_compare:
 # ============================================================
 
 with tab_data:
-    st.markdown('<div class="section-title">🗂️ Exploration des données brutes</div>', unsafe_allow_html=True)
+    section_title("fi fi-rr-folder-open", "Exploration des données brutes")
 
-    data_tab1, data_tab2 = st.tabs(["📄 Demandes", "🧾 Commandes"])
+    data_tab1, data_tab2 = st.tabs(["Demandes", "Commandes"])
 
     with data_tab1:
         if df_demandes.empty:
             st.info("Aucune donnée demande disponible.")
         else:
-            st.markdown("### Aperçu demandes")
+            sub_section_title("fi fi-rr-table", "Aperçu demandes")
             st.dataframe(df_demandes, use_container_width=True, height=500)
 
-            st.markdown("### Colonnes détectées demandes")
+            sub_section_title("fi fi-rr-list", "Colonnes détectées demandes")
             st.write(list(df_demandes.columns))
 
     with data_tab2:
         if df_commandes.empty:
             st.info("Aucune donnée commande disponible.")
         else:
-            st.markdown("### Aperçu commandes")
+            sub_section_title("fi fi-rr-table", "Aperçu commandes")
             st.dataframe(df_commandes, use_container_width=True, height=500)
 
-            st.markdown("### Colonnes détectées commandes")
+            sub_section_title("fi fi-rr-list", "Colonnes détectées commandes")
             st.write(list(df_commandes.columns))
+
+
+# ============================================================
+# FOOTER
+# ============================================================
+
+st.markdown("""
+<div class="footer">
+    Icons by Flaticon
+</div>
+""", unsafe_allow_html=True)
