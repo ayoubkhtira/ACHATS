@@ -8,14 +8,29 @@ from io import BytesIO
 # ============================================================
 
 st.set_page_config(
-    page_title="Platforme de similation Achats",
+    page_title="Plateforme Analyse Achats",
     page_icon="🛒",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # ============================================================
-# CSS PROFESSIONNEL + FLATICON
+# PALETTE GRAPHIQUES
+# ============================================================
+
+PLOTLY_COLORS = [
+    "#2563eb",
+    "#16a34a",
+    "#7c3aed",
+    "#f97316",
+    "#ef4444",
+    "#0891b2",
+    "#9333ea",
+    "#0f766e"
+]
+
+# ============================================================
+# CSS PROFESSIONNEL - STYLE SAAS / WIZ INSPIRED
 # ============================================================
 
 st.markdown("""
@@ -23,200 +38,510 @@ st.markdown("""
 @import url('https://cdn-uicons.flaticon.com/2.6.0/uicons-bold-rounded/css/uicons-bold-rounded.css');
 @import url('https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css');
 
+/* ============================================================
+   THEME GLOBAL
+============================================================ */
+
 :root {
     --primary: #2563eb;
-    --primary-dark: #1e3a8a;
+    --primary-dark: #1d4ed8;
+    --primary-soft: #eff6ff;
+
     --dark: #0f172a;
+    --text: #1e293b;
     --muted: #64748b;
-    --bg: #f7f9fc;
-    --card: #ffffff;
-    --border: #e5e7eb;
+    --muted-soft: #94a3b8;
+
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --surface-soft: #f1f5f9;
+
+    --border: #e2e8f0;
+    --border-soft: #edf2f7;
+
     --success: #16a34a;
+    --success-soft: #ecfdf5;
+
     --warning: #f59e0b;
+    --warning-soft: #fffbeb;
+
     --danger: #ef4444;
+    --danger-soft: #fef2f2;
+
     --purple: #7c3aed;
+    --purple-soft: #f5f3ff;
+
     --orange: #f97316;
+    --orange-soft: #fff7ed;
+
+    --radius-xl: 24px;
+    --radius-lg: 18px;
+    --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.07);
+    --shadow-card: 0 10px 30px rgba(15, 23, 42, 0.06);
+}
+
+html, body, [class*="css"] {
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 .main {
-    background-color: var(--bg);
+    background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 32%),
+        radial-gradient(circle at top right, rgba(124, 58, 237, 0.07), transparent 28%),
+        var(--bg);
 }
 
 .block-container {
-    padding-top: 1.2rem;
-    padding-bottom: 2rem;
+    padding-top: 1.1rem;
+    padding-bottom: 2.5rem;
+    max-width: 1440px;
 }
 
-.app-header {
-    background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 60%, #2563eb 100%);
-    padding: 32px 36px;
-    border-radius: 26px;
+[data-testid="stDecoration"] {
+    display: none;
+}
+
+#MainMenu {
+    visibility: hidden;
+}
+
+footer {
+    visibility: hidden;
+}
+
+/* ============================================================
+   HERO HEADER
+============================================================ */
+
+.app-hero {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #ffffff 0%, #f8fbff 45%, #eef6ff 100%);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    border-radius: 34px;
+    padding: 34px 38px;
     margin-bottom: 28px;
-    color: white;
-    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.20);
+    box-shadow: var(--shadow-soft);
 }
 
-.title-row {
-    display: flex;
+.app-hero::before {
+    content: "";
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    right: -160px;
+    top: -160px;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.10);
+}
+
+.app-hero::after {
+    content: "";
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    right: 120px;
+    bottom: -150px;
+    border-radius: 999px;
+    background: rgba(124, 58, 237, 0.08);
+}
+
+.hero-grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1.45fr 0.95fr;
+    gap: 30px;
     align-items: center;
-    gap: 18px;
 }
 
-.header-icon {
-    width: 58px;
-    height: 58px;
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.16);
+.hero-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 13px;
+    border-radius: 999px;
+    background: var(--primary-soft);
+    color: var(--primary-dark);
+    font-size: 13px;
+    font-weight: 850;
+    border: 1px solid #dbeafe;
+    margin-bottom: 18px;
+}
+
+.hero-title {
+    margin: 0;
+    color: var(--dark);
+    font-size: 44px;
+    line-height: 1.05;
+    letter-spacing: -1.4px;
+    font-weight: 950;
+}
+
+.hero-title span {
+    color: var(--primary);
+}
+
+.hero-subtitle {
+    margin: 17px 0 0 0;
+    max-width: 720px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.75;
+    font-weight: 520;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 1px solid var(--border);
+    color: #334155;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 13px;
+    font-weight: 800;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+}
+
+.hero-badge i {
+    color: var(--primary);
+}
+
+/* Illustration */
+.hero-illustration {
+    position: relative;
+    min-height: 250px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.5));
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 30px;
+    box-shadow: 0 20px 48px rgba(37, 99, 235, 0.10);
+    padding: 22px;
+}
+
+.cloud-card {
+    position: absolute;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 22px;
+    box-shadow: 0 18px 35px rgba(15, 23, 42, 0.08);
+    padding: 16px;
+}
+
+.cloud-main {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 190px;
+    text-align: center;
+}
+
+.cloud-main .icon {
+    width: 62px;
+    height: 62px;
+    margin: 0 auto 11px auto;
+    border-radius: 21px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
     display: flex;
     align-items: center;
     justify-content: center;
+    color: white;
     font-size: 26px;
 }
 
-.app-header h1 {
+.cloud-main h4 {
     margin: 0;
-    font-size: 34px;
-    font-weight: 900;
-    letter-spacing: -0.5px;
+    color: var(--dark);
+    font-size: 15px;
+    font-weight: 950;
 }
 
-.app-header p {
-    margin-top: 8px;
-    color: #dbeafe;
-    font-size: 15px;
-    line-height: 1.6;
+.cloud-main p {
+    margin: 6px 0 0 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.45;
 }
+
+.floating-one {
+    top: 20px;
+    left: 18px;
+    width: 126px;
+}
+
+.floating-two {
+    bottom: 20px;
+    right: 18px;
+    width: 140px;
+}
+
+.floating-three {
+    top: 24px;
+    right: 24px;
+    width: 118px;
+}
+
+.float-label {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+    margin-bottom: 5px;
+}
+
+.float-value {
+    color: var(--dark);
+    font-size: 19px;
+    font-weight: 950;
+}
+
+.line-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    background: var(--success);
+    border-radius: 999px;
+    margin-right: 6px;
+}
+
+/* ============================================================
+   TITRES
+============================================================ */
 
 .section-title {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     font-size: 22px;
-    font-weight: 900;
+    font-weight: 950;
     color: var(--dark);
-    margin: 18px 0;
+    margin: 24px 0 18px 0;
+    letter-spacing: -0.35px;
 }
 
 .section-title i {
+    width: 42px;
+    height: 42px;
+    border-radius: 15px;
+    background: var(--primary-soft);
     color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
 }
 
 .sub-section-title {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 10px;
     font-size: 18px;
-    font-weight: 850;
-    color: #1e293b;
-    margin: 22px 0 14px 0;
+    font-weight: 900;
+    color: var(--text);
+    margin: 24px 0 15px 0;
 }
 
 .sub-section-title i {
-    color: #475569;
+    color: var(--primary);
 }
 
+/* ============================================================
+   CARTES
+============================================================ */
+
 .card {
-    background: var(--card);
-    padding: 24px;
-    border-radius: 22px;
-    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 25px;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-card);
     border: 1px solid var(--border);
-    min-height: 150px;
+    min-height: 175px;
+    transition: all 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.09);
+    border-color: #cbd5e1;
 }
 
 .card h4 {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     color: var(--dark);
-    margin: 0 0 10px 0;
+    margin: 0 0 11px 0;
     font-size: 17px;
-    font-weight: 900;
+    font-weight: 950;
 }
 
 .pro-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 13px;
-    background: rgba(37, 99, 235, 0.10);
+    min-width: 42px;
+    width: 42px;
+    height: 42px;
+    border-radius: 15px;
+    background: var(--primary-soft);
     color: var(--primary);
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    font-size: 18px;
 }
 
+.small-note {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin: 0;
+}
+
+/* ============================================================
+   KPI
+============================================================ */
+
 .metric-card {
+    position: relative;
+    overflow: hidden;
     background: white;
-    padding: 20px 22px;
-    border-radius: 20px;
-    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+    padding: 22px 22px;
+    border-radius: 23px;
+    box-shadow: var(--shadow-card);
     border: 1px solid var(--border);
-    border-left: 5px solid var(--primary);
-    min-height: 125px;
+    min-height: 135px;
+}
+
+.metric-card::before {
+    content: "";
+    position: absolute;
+    right: -35px;
+    top: -35px;
+    width: 105px;
+    height: 105px;
+    border-radius: 999px;
+    background: var(--metric-soft, #eff6ff);
+}
+
+.metric-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    z-index: 2;
+}
+
+.metric-icon {
+    width: 39px;
+    height: 39px;
+    border-radius: 14px;
+    background: var(--metric-soft, #eff6ff);
+    color: var(--metric-color, #2563eb);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
 }
 
 .metric-label {
     font-size: 13px;
     color: var(--muted);
-    font-weight: 750;
+    font-weight: 850;
     margin-bottom: 8px;
+    position: relative;
+    z-index: 2;
 }
 
 .metric-value {
-    font-size: 29px;
+    font-size: 30px;
     color: var(--dark);
     font-weight: 950;
-    letter-spacing: -0.4px;
+    letter-spacing: -0.7px;
+    position: relative;
+    z-index: 2;
 }
 
 .metric-help {
     font-size: 12px;
-    color: #94a3b8;
-    margin-top: 4px;
-    line-height: 1.4;
+    color: var(--muted-soft);
+    margin-top: 6px;
+    line-height: 1.45;
+    position: relative;
+    z-index: 2;
 }
+
+/* ============================================================
+   ALERTS
+============================================================ */
 
 .warning-box {
-    background: #fffbeb;
+    background: linear-gradient(135deg, #fffbeb, #fff7ed);
     border: 1px solid #fde68a;
     color: #92400e;
-    padding: 16px 18px;
-    border-radius: 16px;
-    font-weight: 750;
+    padding: 17px 19px;
+    border-radius: 18px;
+    font-weight: 820;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 11px;
+    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.08);
 }
 
-.small-note {
-    font-size: 13px;
-    color: #64748b;
-    line-height: 1.55;
+.info-card {
+    background: white;
+    border: 1px dashed #cbd5e1;
+    color: var(--muted);
+    padding: 22px;
+    border-radius: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-/* Tabs */
+/* ============================================================
+   TABS
+============================================================ */
+
 .stTabs [data-baseweb="tab-list"] {
     gap: 10px;
+    background: white;
+    border: 1px solid var(--border);
+    padding: 8px;
+    border-radius: 20px;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
 }
 
 .stTabs [data-baseweb="tab"] {
-    background: white;
     border-radius: 15px;
-    padding: 12px 20px;
-    border: 1px solid #e5e7eb;
-    font-weight: 800;
-    color: #334155;
+    padding: 12px 18px;
+    font-weight: 850;
+    color: #475569;
+    background: transparent;
 }
 
 .stTabs [aria-selected="true"] {
-    background: #1e3a8a !important;
+    background: var(--dark) !important;
     color: white !important;
-    border-color: #1e3a8a !important;
 }
 
-/* Sidebar */
+/* ============================================================
+   SIDEBAR
+============================================================ */
+
 div[data-testid="stSidebar"] {
-    background: #0f172a;
+    background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.28), transparent 35%),
+        linear-gradient(180deg, #0f172a 0%, #111827 100%);
+}
+
+div[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+    padding-top: 1.4rem;
 }
 
 div[data-testid="stSidebar"] * {
@@ -224,41 +549,130 @@ div[data-testid="stSidebar"] * {
 }
 
 div[data-testid="stSidebar"] label {
-    color: white !important;
-    font-weight: 750 !important;
+    color: #e5e7eb !important;
+    font-weight: 800 !important;
+    font-size: 13px !important;
+}
+
+.sidebar-brand {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    padding: 16px;
+    border-radius: 22px;
+    margin-bottom: 18px;
+}
+
+.sidebar-brand-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 950;
+    margin-bottom: 8px;
+}
+
+.sidebar-brand-title i {
+    color: #93c5fd;
+}
+
+.sidebar-brand-subtitle {
+    color: #cbd5e1;
+    font-size: 12.5px;
+    line-height: 1.55;
 }
 
 .sidebar-title {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 20px;
-    font-weight: 900;
-    margin-bottom: 8px;
+    font-size: 15px;
+    font-weight: 950;
+    margin: 20px 0 10px 0;
+    color: white;
 }
 
 .sidebar-title i {
+    width: 31px;
+    height: 31px;
+    border-radius: 11px;
+    background: rgba(147, 197, 253, 0.16);
     color: #93c5fd;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .sidebar-note {
     color: #cbd5e1;
     font-size: 13px;
-    line-height: 1.5;
+    line-height: 1.55;
     margin-bottom: 14px;
 }
 
+/* Buttons */
+.stButton > button,
+.stDownloadButton > button {
+    border-radius: 15px !important;
+    border: 1px solid #dbeafe !important;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    color: white !important;
+    font-weight: 900 !important;
+    padding: 0.7rem 1rem !important;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.22);
+}
+
+.stDownloadButton > button:hover,
+.stButton > button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 15px 32px rgba(37, 99, 235, 0.28);
+}
+
+/* Dataframes */
+[data-testid="stDataFrame"] {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.045);
+}
+
+/* Plotly */
+[data-testid="stPlotlyChart"] {
+    background: white;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    padding: 12px;
+    box-shadow: var(--shadow-card);
+}
+
+/* Footer */
 .footer {
-    margin-top: 42px;
-    padding-top: 16px;
-    border-top: 1px solid #e5e7eb;
-    color: #94a3b8;
-    font-size: 12px;
+    margin-top: 46px;
+    padding: 18px 20px;
+    border-radius: 20px;
+    background: white;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 12.5px;
     text-align: center;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+}
+
+/* Responsive */
+@media (max-width: 1100px) {
+    .hero-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-illustration {
+        min-height: 230px;
+    }
+
+    .hero-title {
+        font-size: 36px;
+    }
 }
 </style>
 """, unsafe_allow_html=True)
-
 
 # ============================================================
 # FONCTIONS UTILITAIRES
@@ -348,12 +762,36 @@ def format_amount(value):
         return "0,00"
 
 
-def metric_card(label, value, help_text="", color="#2563eb"):
+def get_soft_color(color):
+    mapping = {
+        "#2563eb": "#eff6ff",
+        "#16a34a": "#ecfdf5",
+        "#7c3aed": "#f5f3ff",
+        "#f97316": "#fff7ed",
+        "#f59e0b": "#fffbeb",
+        "#ef4444": "#fef2f2",
+        "#0891b2": "#ecfeff",
+        "#9333ea": "#faf5ff",
+        "#0f766e": "#f0fdfa"
+    }
+    return mapping.get(color, "#eff6ff")
+
+
+def metric_card(label, value, help_text="", color="#2563eb", icon="fi fi-rr-stats"):
+    soft = get_soft_color(color)
+
     st.markdown(
         f"""
-        <div class="metric-card" style="border-left-color:{color};">
-            <div class="metric-label">{label}</div>
-            <div class="metric-value">{value}</div>
+        <div class="metric-card" style="--metric-color:{color}; --metric-soft:{soft};">
+            <div class="metric-top">
+                <div>
+                    <div class="metric-label">{label}</div>
+                    <div class="metric-value">{value}</div>
+                </div>
+                <div class="metric-icon">
+                    <i class="{icon}"></i>
+                </div>
+            </div>
             <div class="metric-help">{help_text}</div>
         </div>
         """,
@@ -447,9 +885,11 @@ def safe_group_sum(df, group_col, value_col, top_n=15):
 
 def apply_filters(df, filters):
     filtered = df.copy()
+
     for col, values in filters.items():
         if values and col in filtered.columns:
             filtered = filtered[filtered[col].astype(str).isin(values)]
+
     return filtered
 
 
@@ -491,27 +931,66 @@ def data_quality_card(df):
     c1, c2, c3, c4 = st.columns(4)
 
     with c1:
-        metric_card("Lignes", format_number(total_rows), "Nombre total d'enregistrements", "#2563eb")
+        metric_card("Lignes", format_number(total_rows), "Nombre total d'enregistrements", "#2563eb", "fi fi-rr-list")
     with c2:
-        metric_card("Colonnes", format_number(total_cols), "Champs disponibles", "#7c3aed")
+        metric_card("Colonnes", format_number(total_cols), "Champs disponibles", "#7c3aed", "fi fi-rr-columns-3")
     with c3:
-        metric_card("Cellules vides", format_number(missing_cells), "Valeurs manquantes", "#f59e0b")
+        metric_card("Cellules vides", format_number(missing_cells), "Valeurs manquantes", "#f59e0b", "fi fi-rr-triangle-warning")
     with c4:
-        metric_card("Doublons", format_number(duplicate_rows), "Lignes dupliquées", "#ef4444")
+        metric_card("Doublons", format_number(duplicate_rows), "Lignes dupliquées", "#ef4444", "fi fi-rr-copy")
 
 
 def show_chart(fig, key):
     fig.update_layout(
         template="plotly_white",
-        title_font=dict(size=17),
-        margin=dict(l=10, r=10, t=60, b=10),
-        height=420
+        title=dict(
+            font=dict(size=17, color="#0f172a"),
+            x=0.02,
+            xanchor="left"
+        ),
+        font=dict(
+            family="Inter, system-ui, sans-serif",
+            color="#334155"
+        ),
+        margin=dict(l=10, r=10, t=62, b=20),
+        height=430,
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.22,
+            xanchor="center",
+            x=0.5
+        )
     )
+
+    fig.update_xaxes(
+        showgrid=True,
+        gridcolor="#eef2f7",
+        zeroline=False,
+        linecolor="#e2e8f0"
+    )
+
+    fig.update_yaxes(
+        showgrid=False,
+        zeroline=False,
+        linecolor="#e2e8f0"
+    )
+
     st.plotly_chart(fig, use_container_width=True, key=key)
 
 
 def empty_info(message):
-    st.info(message)
+    st.markdown(
+        f"""
+        <div class="info-card">
+            <i class="fi fi-rr-info"></i>
+            <span>{message}</span>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
 # ============================================================
@@ -519,27 +998,89 @@ def empty_info(message):
 # ============================================================
 
 st.markdown("""
-<div class="app-header">
-    <div class="title-row">
-        <span class="header-icon">
-            <i class="fi fi-br-shopping-cart"></i>
-        </span>
+<div class="app-hero">
+    <div class="hero-grid">
+
         <div>
-            <h1>Platforme Analyse Achats </h1>
-            <p>
-                Ciments Du Maroc
+            <div class="hero-kicker">
+                <i class="fi fi-rr-shield-check"></i>
+                Plateforme d’analyse achats intelligente
+            </div>
+
+            <h1 class="hero-title">
+                Pilotez vos <span>demandes</span> et <span>commandes achats</span> avec clarté.
+            </h1>
+
+            <p class="hero-subtitle">
+                Une interface décisionnelle moderne pour analyser les demandes d’achat,
+                suivre les commandes, comparer les articles demandés vs commandés
+                et détecter rapidement les écarts opérationnels.
             </p>
+
+            <div class="hero-actions">
+                <div class="hero-badge">
+                    <i class="fi fi-rr-chart-histogram"></i>
+                    Tableaux de bord dynamiques
+                </div>
+                <div class="hero-badge">
+                    <i class="fi fi-rr-filter"></i>
+                    Filtres avancés
+                </div>
+                <div class="hero-badge">
+                    <i class="fi fi-rr-file-excel"></i>
+                    Export Excel
+                </div>
+            </div>
         </div>
+
+        <div class="hero-illustration">
+            <div class="cloud-card floating-one">
+                <div class="float-label">Demandes</div>
+                <div class="float-value">DA</div>
+            </div>
+
+            <div class="cloud-card floating-three">
+                <div class="float-label">Suivi</div>
+                <div class="float-value">
+                    <span class="line-dot"></span>Live
+                </div>
+            </div>
+
+            <div class="cloud-card cloud-main">
+                <div class="icon">
+                    <i class="fi fi-br-shopping-cart"></i>
+                </div>
+                <h4>Achats 360°</h4>
+                <p>Demandes, commandes, fournisseurs et écarts dans une seule vue.</p>
+            </div>
+
+            <div class="cloud-card floating-two">
+                <div class="float-label">Analyse</div>
+                <div class="float-value">KPI</div>
+            </div>
+        </div>
+
     </div>
 </div>
 """, unsafe_allow_html=True)
-
 
 # ============================================================
 # SIDEBAR - IMPORT
 # ============================================================
 
 with st.sidebar:
+    st.markdown("""
+    <div class="sidebar-brand">
+        <div class="sidebar-brand-title">
+            <i class="fi fi-br-shopping-cart"></i>
+            <span>Achats Analytics</span>
+        </div>
+        <div class="sidebar-brand-subtitle">
+            Import, filtrage et analyse décisionnelle des demandes et commandes achats.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
     sidebar_title("fi fi-rr-settings-sliders", "Paramètres")
 
     st.markdown(
@@ -596,11 +1137,11 @@ if uploaded_file is None:
     st.markdown("""
     <div class="warning-box">
         <i class="fi fi-rr-info"></i>
-        <span>Veuillez importer un fichier Excel pour démarrer l’analyse.</span>
+        <span>Importez votre fichier Excel pour générer automatiquement vos analyses achats.</span>
     </div>
     """, unsafe_allow_html=True)
 
-    sub_section_title("fi fi-rr-apps", "Fonctionnalités disponibles")
+    sub_section_title("fi fi-rr-apps", "Ce que la plateforme vous permet de faire")
 
     f1, f2, f3 = st.columns(3)
 
@@ -612,7 +1153,8 @@ if uploaded_file is None:
                 Analyse des demandes
             </h4>
             <p class="small-note">
-                Suivi des DA, articles demandés, demandeurs, GAc, quantités et évolution mensuelle.
+                Identifiez les volumes de DA, les articles les plus demandés,
+                les demandeurs actifs, les divisions concernées et les tendances mensuelles.
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -622,10 +1164,11 @@ if uploaded_file is None:
         <div class="card">
             <h4>
                 <span class="pro-icon"><i class="fi fi-rr-shopping-cart"></i></span>
-                Analyse des commandes
+                Pilotage des commandes
             </h4>
             <p class="small-note">
-                Analyse des commandes, fournisseurs, montants, divisions, devises et articles commandés.
+                Analysez les fournisseurs, les montants engagés, les articles commandés,
+                les devises, les divisions et les évolutions dans le temps.
             </p>
         </div>
         """, unsafe_allow_html=True)
@@ -634,14 +1177,21 @@ if uploaded_file is None:
         st.markdown("""
         <div class="card">
             <h4>
-                <span class="pro-icon"><i class="fi fi-rr-chart-histogram"></i></span>
-                Analyse croisée
+                <span class="pro-icon"><i class="fi fi-rr-search-alt"></i></span>
+                Détection des écarts
             </h4>
             <p class="small-note">
-                Comparaison entre articles demandés et articles commandés pour détecter les écarts.
+                Comparez les articles demandés et commandés afin d’identifier
+                les demandes non transformées et les commandes hors demandes.
             </p>
         </div>
         """, unsafe_allow_html=True)
+
+    st.markdown("""
+    <div class="footer">
+        Plateforme d’analyse achats — Développée par <strong>Ayoub Khtira</strong> pour <strong>Ciments du Maroc</strong>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.stop()
 
@@ -774,13 +1324,13 @@ with tab_overview:
     c1, c2, c3, c4 = st.columns(4)
 
     with c1:
-        metric_card("Demandes d'achat", format_number(nb_demandes), "Nombre de DA uniques", "#2563eb")
+        metric_card("Demandes d'achat", format_number(nb_demandes), "Nombre de DA uniques", "#2563eb", "fi fi-rr-file-invoice")
     with c2:
-        metric_card("Commandes achats", format_number(nb_commandes), "Nombre de commandes uniques", "#16a34a")
+        metric_card("Commandes achats", format_number(nb_commandes), "Nombre de commandes uniques", "#16a34a", "fi fi-rr-shopping-cart")
     with c3:
-        metric_card("Fournisseurs", format_number(nb_fournisseurs), "Fournisseurs distincts", "#7c3aed")
+        metric_card("Fournisseurs", format_number(nb_fournisseurs), "Fournisseurs distincts", "#7c3aed", "fi fi-rr-users-alt")
     with c4:
-        metric_card("Montant commandes", format_amount(montant_total), "Quantité × Prix net", "#f97316")
+        metric_card("Montant commandes", format_amount(montant_total), "Quantité × Prix net", "#f97316", "fi fi-rr-coins")
 
     sub_section_title("fi fi-rr-chart-histogram", "Synthèse visuelle")
 
@@ -795,7 +1345,8 @@ with tab_overview:
                 y=dem_col_gac,
                 orientation="h",
                 title="Top GAc par nombre de demandes",
-                text="Nombre"
+                text="Nombre",
+                color_discrete_sequence=PLOTLY_COLORS
             )
             fig.update_layout(yaxis={"categoryorder": "total ascending"})
             show_chart(fig, "overview_top_gac")
@@ -811,7 +1362,8 @@ with tab_overview:
                 y=cmd_col_fournisseur,
                 orientation="h",
                 title="Top fournisseurs par montant estimé",
-                text="Total"
+                text="Total",
+                color_discrete_sequence=PLOTLY_COLORS
             )
             fig.update_layout(yaxis={"categoryorder": "total ascending"})
             show_chart(fig, "overview_top_fournisseurs")
@@ -868,13 +1420,13 @@ with tab_demandes:
         c1, c2, c3, c4 = st.columns(4)
 
         with c1:
-            metric_card("DA uniques", format_number(total_da), "Demandes distinctes", "#2563eb")
+            metric_card("DA uniques", format_number(total_da), "Demandes distinctes", "#2563eb", "fi fi-rr-file-invoice")
         with c2:
-            metric_card("Lignes DA", format_number(total_lignes), "Postes de demandes", "#16a34a")
+            metric_card("Lignes DA", format_number(total_lignes), "Postes de demandes", "#16a34a", "fi fi-rr-list")
         with c3:
-            metric_card("Articles", format_number(total_articles), "Articles distincts", "#7c3aed")
+            metric_card("Articles", format_number(total_articles), "Articles distincts", "#7c3aed", "fi fi-rr-box")
         with c4:
-            metric_card("Quantité totale", format_number(total_quantite), "Somme des quantités", "#f97316")
+            metric_card("Quantité totale", format_number(total_quantite), "Somme des quantités", "#f97316", "fi fi-rr-calculator")
 
         sub_section_title("fi fi-rr-chart-histogram", "Analyses principales")
 
@@ -888,7 +1440,8 @@ with tab_demandes:
                     x=dem_col_div,
                     y="Nombre",
                     title="Nombre de demandes par division",
-                    text="Nombre"
+                    text="Nombre",
+                    color_discrete_sequence=PLOTLY_COLORS
                 )
                 show_chart(fig, "demandes_division")
             elif dem_col_gac:
@@ -898,7 +1451,8 @@ with tab_demandes:
                     x=dem_col_gac,
                     y="Nombre",
                     title="Nombre de demandes par GAc",
-                    text="Nombre"
+                    text="Nombre",
+                    color_discrete_sequence=PLOTLY_COLORS
                 )
                 show_chart(fig, "demandes_gac")
             else:
@@ -913,7 +1467,8 @@ with tab_demandes:
                     y=dem_col_designation,
                     orientation="h",
                     title="Top articles demandés",
-                    text="Nombre"
+                    text="Nombre",
+                    color_discrete_sequence=PLOTLY_COLORS
                 )
                 fig.update_layout(yaxis={"categoryorder": "total ascending"})
                 show_chart(fig, "demandes_articles")
@@ -931,7 +1486,8 @@ with tab_demandes:
                     y=dem_col_demandeur,
                     orientation="h",
                     title="Top demandeurs par nombre de DA",
-                    text="Nombre"
+                    text="Nombre",
+                    color_discrete_sequence=PLOTLY_COLORS
                 )
                 fig.update_layout(yaxis={"categoryorder": "total ascending"})
                 show_chart(fig, "demandes_demandeurs")
@@ -955,7 +1511,8 @@ with tab_demandes:
                         x=dem_col_date_da,
                         y="Nombre",
                         markers=True,
-                        title="Évolution mensuelle des demandes"
+                        title="Évolution mensuelle des demandes",
+                        color_discrete_sequence=PLOTLY_COLORS
                     )
                     show_chart(fig, "demandes_trend")
                 else:
@@ -1025,13 +1582,13 @@ with tab_commandes:
         c1, c2, c3, c4 = st.columns(4)
 
         with c1:
-            metric_card("Commandes uniques", format_number(total_cmd), "Documents achats distincts", "#2563eb")
+            metric_card("Commandes uniques", format_number(total_cmd), "Documents achats distincts", "#2563eb", "fi fi-rr-shopping-cart")
         with c2:
-            metric_card("Lignes commandes", format_number(total_lignes_cmd), "Postes de commandes", "#16a34a")
+            metric_card("Lignes commandes", format_number(total_lignes_cmd), "Postes de commandes", "#16a34a", "fi fi-rr-list")
         with c3:
-            metric_card("Fournisseurs", format_number(total_fournisseurs), "Fournisseurs distincts", "#7c3aed")
+            metric_card("Fournisseurs", format_number(total_fournisseurs), "Fournisseurs distincts", "#7c3aed", "fi fi-rr-users-alt")
         with c4:
-            metric_card("Montant total", format_amount(total_montant), "Quantité × Prix net", "#f97316")
+            metric_card("Montant total", format_amount(total_montant), "Quantité × Prix net", "#f97316", "fi fi-rr-coins")
 
         sub_section_title("fi fi-rr-chart-histogram", "Analyses fournisseurs, articles et divisions")
 
@@ -1046,7 +1603,8 @@ with tab_commandes:
                     y=cmd_col_fournisseur,
                     orientation="h",
                     title="Top fournisseurs par montant estimé",
-                    text="Total"
+                    text="Total",
+                    color_discrete_sequence=PLOTLY_COLORS
                 )
                 fig.update_layout(yaxis={"categoryorder": "total ascending"})
                 show_chart(fig, "commandes_fournisseurs")
@@ -1062,7 +1620,8 @@ with tab_commandes:
                     y=cmd_col_designation,
                     orientation="h",
                     title="Top articles par montant estimé",
-                    text="Total"
+                    text="Total",
+                    color_discrete_sequence=PLOTLY_COLORS
                 )
                 fig.update_layout(yaxis={"categoryorder": "total ascending"})
                 show_chart(fig, "commandes_articles")
@@ -1079,7 +1638,8 @@ with tab_commandes:
                     names=cmd_col_div,
                     values="Total",
                     title="Répartition du montant par division",
-                    hole=0.45
+                    hole=0.5,
+                    color_discrete_sequence=PLOTLY_COLORS
                 )
                 show_chart(fig, "commandes_division")
             elif cmd_col_gac:
@@ -1089,7 +1649,8 @@ with tab_commandes:
                     names=cmd_col_gac,
                     values="Total",
                     title="Répartition du montant par GAc",
-                    hole=0.45
+                    hole=0.5,
+                    color_discrete_sequence=PLOTLY_COLORS
                 )
                 show_chart(fig, "commandes_gac")
             else:
@@ -1112,7 +1673,8 @@ with tab_commandes:
                         x=cmd_col_date,
                         y="Montant",
                         markers=True,
-                        title="Évolution mensuelle des montants commandes"
+                        title="Évolution mensuelle des montants commandes",
+                        color_discrete_sequence=PLOTLY_COLORS
                     )
                     show_chart(fig, "commandes_trend")
                 else:
@@ -1182,13 +1744,13 @@ with tab_compare:
         c1, c2, c3, c4 = st.columns(4)
 
         with c1:
-            metric_card("Articles demandés", format_number(len(articles_demandes)), "Articles dans les DA", "#2563eb")
+            metric_card("Articles demandés", format_number(len(articles_demandes)), "Articles dans les DA", "#2563eb", "fi fi-rr-box")
         with c2:
-            metric_card("Articles commandés", format_number(len(articles_commandes)), "Articles dans les commandes", "#16a34a")
+            metric_card("Articles commandés", format_number(len(articles_commandes)), "Articles dans les commandes", "#16a34a", "fi fi-rr-shopping-cart")
         with c3:
-            metric_card("Articles communs", format_number(len(articles_communs)), f"Taux couverture : {taux_couverture:.1f}%", "#7c3aed")
+            metric_card("Articles communs", format_number(len(articles_communs)), f"Taux couverture : {taux_couverture:.1f}%", "#7c3aed", "fi fi-rr-check-circle")
         with c4:
-            metric_card("Demandés non commandés", format_number(len(articles_non_commandes)), "Écart potentiel", "#ef4444")
+            metric_card("Demandés non commandés", format_number(len(articles_non_commandes)), "Écart potentiel", "#ef4444", "fi fi-rr-triangle-warning")
 
         sub_section_title("fi fi-rr-chart-pie-alt", "Couverture articles")
 
@@ -1210,7 +1772,9 @@ with tab_compare:
             x="Catégorie",
             y="Nombre",
             text="Nombre",
-            title="Couverture entre demandes et commandes"
+            title="Couverture entre demandes et commandes",
+            color="Catégorie",
+            color_discrete_sequence=PLOTLY_COLORS
         )
         show_chart(fig, "compare_couverture")
 
@@ -1268,6 +1832,6 @@ with tab_data:
 
 st.markdown("""
 <div class="footer">
-    Platforme de simulation Achats  — Dévellopé par AYOUB KHTIRA - Ciment du maroc 
+    Plateforme d’analyse achats — Développée par <strong>Ayoub Khtira</strong> pour <strong>Ciments du Maroc</strong>
 </div>
 """, unsafe_allow_html=True)
