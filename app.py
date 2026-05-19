@@ -625,23 +625,17 @@ def app_header():
 
                     <div class="header-left">
                         <div class="eyebrow">
-                            🛒 Commerce Intelligence · Achats Analytics
                         </div>
 
                         <h1 class="title">
-                            Pilotez vos <span>demandes</span>, commandes et fournisseurs.
+                            Analysez vos <span>demandes</span>, commandes et fournisseurs.
                         </h1>
 
                         <p class="description">
-                            Une plateforme décisionnelle pensée pour analyser les flux achats,
-                            détecter les écarts, suivre les volumes et accélérer le pilotage opérationnel.
+                            CIMENTS DU MAROC
                         </p>
 
                         <div class="chips">
-                            <div class="chip">📊 KPI dynamiques</div>
-                            <div class="chip">📦 Suivi articles</div>
-                            <div class="chip">🔎 Analyse DA / commandes</div>
-                            <div class="chip">📤 Export Excel</div>
                         </div>
                     </div>
 
