@@ -1,214 +1,225 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+from io import BytesIO
 
-# ========================================================
-# CONFIG
-# ========================================================
-st.set_page_config(page_title="Procurement Platform", layout="wide")
+# ============================================================
+# CONFIGURATION
+# ============================================================
 
-# ========================================================
-# SESSION INIT
-# ========================================================
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
-if "dark_mode" not in st.session_state:
-    st.session_state.dark_mode = False
+st.set_page_config(
+    page_title="Procurement Analytics Platform",
+    page_icon="🛒",
+    layout="wide"
+)
 
-# ========================================================
-# LOGIN SYSTEM
-# ========================================================
-def login():
-    st.title("🔐 Login Plateforme Achats")
+# CLEAN UI
+st.markdown("""
+<style>
+#MainMenu {visibility:hidden;}
+footer {visibility:hidden;}
+header {visibility:hidden;}
+</style>
+""", unsafe_allow_html=True)
 
-    username = st.text_input("User")
-    password = st.text_input("Password", type="password")
+# ============================================================
+# CSS GLOBAL PREMIUM
+# ============================================================
 
-    if st.button("Connexion"):
-        if username == "achats" and password == "1234":
-            st.session_state.logged_in = True
-            st.success("Connecté ✅")
-            st.rerun()
-        else:
-            st.error("Identifiants incorrects")
+st.markdown("""
+<style>
 
-if not st.session_state.logged_in:
-    login()
-    st.stop()
+/* GLOBAL */
+.main { background: #f7f9fc; }
 
-# ========================================================
-# DARK MODE
-# ========================================================
-def apply_theme():
-    if st.session_state.dark_mode:
-        bg = "#0f172a"
-        text = "white"
-        card = "#111827"
-    else:
-        bg = "#f7f9fc"
-        text = "#111"
-        card = "white"
+/* HEADER */
+.app-header {
+    background: linear-gradient(135deg,#0f172a,#1e3a8a,#2563eb);
+    padding: 30px;
+    border-radius: 24px;
+    color: white;
+    margin-bottom: 25px;
+    animation: fadeIn 0.6s ease;
+}
+.title-row {
+    display:flex;
+    align-items:center;
+    gap:20px;
+}
+.header-icon {
+    font-size:32px;
+    background:rgba(255,255,255,0.15);
+    padding:20px;
+    border-radius:18px;
+    transition:0.3s;
+}
+.header-icon:hover { transform:scale(1.1) rotate(-5deg); }
 
-    st.markdown(f"""
-    <style>
-    .main {{background:{bg}; color:{text};}}
-    .card {{
-        background:{card};
-        padding:20px;
-        border-radius:16px;
-        box-shadow:0 5px 15px rgba(0,0,0,0.08);
-    }}
-    </style>
-    """, unsafe_allow_html=True)
+/* SIDEBAR */
+section[data-testid="stSidebar"] {
+    background: linear-gradient(180deg,#0f172a,#111827);
+}
+.sidebar-title {
+    padding:12px;
+    color:white;
+    font-weight:800;
+    background:rgba(255,255,255,0.05);
+    border-radius:12px;
+    margin-bottom:10px;
+}
+section[data-testid="stSidebar"] label {
+    color:#cbd5e1 !important;
+}
 
-apply_theme()
+/* TABS */
+.stTabs [data-baseweb="tab-list"] {
+    background:white;
+    border-radius:16px;
+    padding:10px;
+}
+.stTabs [data-baseweb="tab"] {
+    border-radius:12px;
+    font-weight:800;
+}
+.stTabs [aria-selected="true"] {
+    background:#2563eb !important;
+    color:white !important;
+}
 
-# ========================================================
-# SIDEBAR NAVIGATION (MULTI PAGE)
-# ========================================================
+/* KPI */
+.metric {
+    background:white;
+    padding:20px;
+    border-radius:16px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.05);
+    transition:0.3s;
+}
+.metric:hover { transform: translateY(-5px); }
+
+.metric-value {
+    font-size:32px;
+    font-weight:900;
+}
+
+/* FOOTER */
+.footer {
+    text-align:center;
+    margin-top:40px;
+    color:#94a3b8;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+    from {opacity:0; transform:translateY(15px);}
+    to {opacity:1;}
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# ============================================================
+# HEADER
+# ============================================================
+
+st.markdown("""
+<div class="app-header">
+    <div class="title-row">
+        <div class="header-icon">🛒</div>
+        <div>
+            <h1>Procurement Analytics Platform</h1>
+            <p>Analyse intelligente des demandes et commandes achats</p>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# ============================================================
+# SIDEBAR
+# ============================================================
+
 with st.sidebar:
+    st.markdown('<div class="sidebar-title">⚙️ Paramètres</div>', unsafe_allow_html=True)
 
-    st.markdown("## 🛒 Menu")
+    file = st.file_uploader("Importer fichier Excel", type=["xlsx"])
 
-    page = st.radio(
-        "",
-        ["📊 Dashboard", "📦 Analyse", "🔄 Matching DA vs Commandes", "📁 Données"]
-    )
+# ============================================================
+# FUNCTIONS
+# ============================================================
 
-    st.markdown("---")
+@st.cache_data
+def load_excel(file):
+    return pd.read_excel(file)
 
-    st.toggle("🌙 Dark Mode", key="dark_mode")
-
-    st.markdown("---")
-
-    st.markdown("### 📤 Upload fichiers")
-
-    files = st.file_uploader(
-        "Importer fichiers Excel",
-        type=["xlsx"],
-        accept_multiple_files=True
-    )
-
-# ========================================================
-# LOAD DATA
-# ========================================================
-dfs = []
-if files:
-    for file in files:
-        df = pd.read_excel(file)
-        df["source"] = file.name
-        dfs.append(df)
-
-    data = pd.concat(dfs, ignore_index=True)
-else:
-    data = None
-
-# ========================================================
-# KPI CARD
-# ========================================================
 def metric(label, value):
     st.markdown(f"""
-    <div class="card">
-        <h4>{label}</h4>
-        <h2>{value}</h2>
+    <div class="metric">
+        <div>{label}</div>
+        <div class="metric-value">{value}</div>
     </div>
     """, unsafe_allow_html=True)
 
-# ========================================================
-# PAGE 1 - DASHBOARD
-# ========================================================
-if page == "📊 Dashboard":
+# ============================================================
+# MAIN LOGIC
+# ============================================================
 
-    st.title("📊 Dashboard Global")
+if file is None:
+    st.info("Importer un fichier pour commencer")
+    st.stop()
 
-    if data is None:
-        st.warning("Importer un fichier")
-        st.stop()
+df = load_excel(file)
 
-    c1, c2, c3 = st.columns(3)
+# ============================================================
+# TABS
+# ============================================================
 
-    with c1:
-        metric("Lignes", len(data))
-    with c2:
-        metric("Colonnes", len(data.columns))
-    with c3:
-        metric("Sources", data["source"].nunique())
+tab1, tab2, tab3 = st.tabs(["📊 Overview", "📦 Analyse", "📄 Data"])
 
-    if len(data.columns) > 0:
-        col = data.columns[0]
-        fig = px.histogram(data, x=col, title="Distribution")
+# ============================================================
+# TAB 1
+# ============================================================
+
+with tab1:
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        metric("Lignes", len(df))
+    with col2:
+        metric("Colonnes", len(df.columns))
+    with col3:
+        metric("Valeurs nulles", df.isna().sum().sum())
+
+    if len(df.columns) >= 2:
+        fig = px.histogram(df, x=df.columns[0])
         st.plotly_chart(fig, use_container_width=True)
 
-# ========================================================
-# PAGE 2 - ANALYSE
-# ========================================================
-if page == "📦 Analyse":
+# ============================================================
+# TAB 2
+# ============================================================
 
-    st.title("📦 Analyse data")
+with tab2:
 
-    if data is None:
-        st.stop()
-
-    col = st.selectbox("Choisir colonne", data.columns)
+    col = st.selectbox("Choisir colonne", df.columns)
 
     if col:
         fig = px.bar(
-            data[col].value_counts().head(10),
+            df[col].value_counts().head(10),
             title="Top valeurs"
         )
         st.plotly_chart(fig, use_container_width=True)
 
-# ========================================================
-# PAGE 3 - MATCHING
-# ========================================================
-if page == "🔄 Matching DA vs Commandes":
+# ============================================================
+# TAB 3
+# ============================================================
 
-    st.title("🔄 Matching DA vs Commandes")
+with tab3:
+    st.dataframe(df, use_container_width=True)
 
-    if data is None:
-        st.stop()
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        col_da = st.selectbox("Colonne DA", data.columns)
-
-    with col2:
-        col_cmd = st.selectbox("Colonne Commandes", data.columns)
-
-    if col_da and col_cmd:
-
-        da_set = set(data[col_da].astype(str))
-        cmd_set = set(data[col_cmd].astype(str))
-
-        common = da_set & cmd_set
-        missing = da_set - cmd_set
-
-        c1, c2 = st.columns(2)
-
-        c1.metric("Match", len(common))
-        c2.metric("Non commandés", len(missing))
-
-        if missing:
-            df_missing = data[data[col_da].astype(str).isin(missing)]
-            st.dataframe(df_missing)
-
-# ========================================================
-# PAGE 4 - DATA
-# ========================================================
-if page == "📁 Données":
-
-    st.title("📁 Exploration")
-
-    if data is None:
-        st.stop()
-
-    st.dataframe(data, use_container_width=True)
-
-# ========================================================
+# ============================================================
 # FOOTER
-# ========================================================
+# ============================================================
+
 st.markdown("""
-<hr>
-<center>Procurement Platform • Ayoub KHTIRA</center>
+<div class="footer">
+Plateforme Achats • Développé par Ayoub KHTIRA
+</div>
 """, unsafe_allow_html=True)
