@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 from io import BytesIO
+import html
 
 # ============================================================
 # CONFIGURATION PAGE
@@ -30,10 +31,24 @@ PLOTLY_COLORS = [
 ]
 
 # ============================================================
+# FONCTION HTML ROBUSTE
+# ============================================================
+
+def render_html(content):
+    """
+    Corrige automatiquement le HTML échappé :
+    &lt;div&gt; devient <div>
+    Puis l'affiche dans Streamlit.
+    """
+    clean_content = html.unescape(content)
+    st.markdown(clean_content, unsafe_allow_html=True)
+
+
+# ============================================================
 # CSS MODERNE
 # ============================================================
 
-st.markdown("""
+render_html("""
 <style>
 @import url('https://cdn-uicons.flaticon.com/2.6.0/uicons-bold-rounded/css/uicons-bold-rounded.css');
 @import url('https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css');
@@ -614,10 +629,10 @@ div[data-testid="stSidebar"] label {
     }
 }
 </style>
-""", unsafe_allow_html=True)
+""")
 
 # ============================================================
-# FONCTIONS EXCEL ROBUSTES
+# FONCTIONS EXCEL
 # ============================================================
 
 def get_excel_engine(file_name):
@@ -630,19 +645,6 @@ def get_excel_engine(file_name):
         return "xlrd"
 
     return None
-
-
-def is_valid_excel_file(file_bytes, file_name):
-    file_name = file_name.lower()
-    signature = file_bytes[:8]
-
-    if file_name.endswith(".xlsx"):
-        return signature.startswith(b"PK")
-
-    if file_name.endswith(".xls"):
-        return signature.startswith(b"\xd0\xcf\x11\xe0")
-
-    return False
 
 
 @st.cache_data(show_spinner=False)
@@ -768,7 +770,7 @@ def get_soft_color(color):
 def metric_card(label, value, help_text="", color="#2563eb", icon="fi fi-rr-stats"):
     soft = get_soft_color(color)
 
-    st.markdown(
+    render_html(
         f"""
         <div class="metric-card" style="--metric-color:{color}; --metric-soft:{soft};">
             <div class="metric-top">
@@ -782,44 +784,51 @@ def metric_card(label, value, help_text="", color="#2563eb", icon="fi fi-rr-stat
             </div>
             <div class="metric-help">{help_text}</div>
         </div>
-        """,
-        unsafe_allow_html=True
+        """
     )
 
 
 def section_title(icon, title):
-    st.markdown(
+    render_html(
         f"""
         <div class="section-title">
             <i class="{icon}"></i>
             <span>{title}</span>
         </div>
-        """,
-        unsafe_allow_html=True
+        """
     )
 
 
 def sub_section_title(icon, title):
-    st.markdown(
+    render_html(
         f"""
         <div class="sub-section-title">
             <i class="{icon}"></i>
             <span>{title}</span>
         </div>
-        """,
-        unsafe_allow_html=True
+        """
     )
 
 
 def sidebar_title(icon, title):
-    st.markdown(
+    render_html(
         f"""
         <div class="sidebar-title">
             <i class="{icon}"></i>
             <span>{title}</span>
         </div>
-        """,
-        unsafe_allow_html=True
+        """
+    )
+
+
+def empty_info(message):
+    render_html(
+        f"""
+        <div class="info-card">
+            <i class="fi fi-rr-info"></i>
+            <span>{message}</span>
+        </div>
+        """
     )
 
 
@@ -970,23 +979,11 @@ def show_chart(fig, key):
 
     st.plotly_chart(fig, use_container_width=True, key=key)
 
-
-def empty_info(message):
-    st.markdown(
-        f"""
-        <div class="info-card">
-            <i class="fi fi-rr-info"></i>
-            <span>{message}</span>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
 # ============================================================
 # HEADER
 # ============================================================
 
-st.markdown("""
+render_html("""
 <div class="app-hero">
     <div class="hero-grid">
 
@@ -1051,14 +1048,14 @@ st.markdown("""
 
     </div>
 </div>
-""", unsafe_allow_html=True)
+""")
 
 # ============================================================
 # SIDEBAR - IMPORT
 # ============================================================
 
 with st.sidebar:
-    st.markdown("""
+    render_html("""
     <div class="sidebar-brand">
         <div class="sidebar-brand-title">
             <i class="fi fi-br-shopping-cart"></i>
@@ -1068,18 +1065,15 @@ with st.sidebar:
             Import, filtrage et analyse décisionnelle des demandes et commandes achats.
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     sidebar_title("fi fi-rr-settings-sliders", "Paramètres")
 
-    st.markdown(
-        """
-        <div class="sidebar-note">
-            Importez votre fichier Excel puis sélectionnez les feuilles correspondant aux demandes et commandes achats.
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    render_html("""
+    <div class="sidebar-note">
+        Importez votre fichier Excel puis sélectionnez les feuilles correspondant aux demandes et commandes achats.
+    </div>
+    """)
 
     uploaded_file = st.file_uploader(
         "Importer un fichier Excel",
@@ -1122,19 +1116,19 @@ with st.sidebar:
 # ============================================================
 
 if uploaded_file is None:
-    st.markdown("""
+    render_html("""
     <div class="warning-box">
         <i class="fi fi-rr-info"></i>
         <span>Importez votre fichier Excel pour générer automatiquement vos analyses achats.</span>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     sub_section_title("fi fi-rr-apps", "Ce que la plateforme vous permet de faire")
 
     f1, f2, f3 = st.columns(3)
 
     with f1:
-        st.markdown("""
+        render_html("""
         <div class="card">
             <h4>
                 <span class="pro-icon"><i class="fi fi-rr-file-invoice"></i></span>
@@ -1145,10 +1139,10 @@ if uploaded_file is None:
                 les demandeurs actifs, les divisions concernées et les tendances mensuelles.
             </p>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
     with f2:
-        st.markdown("""
+        render_html("""
         <div class="card">
             <h4>
                 <span class="pro-icon"><i class="fi fi-rr-shopping-cart"></i></span>
@@ -1159,10 +1153,10 @@ if uploaded_file is None:
                 les devises, les divisions et les évolutions dans le temps.
             </p>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
     with f3:
-        st.markdown("""
+        render_html("""
         <div class="card">
             <h4>
                 <span class="pro-icon"><i class="fi fi-rr-search-alt"></i></span>
@@ -1173,13 +1167,13 @@ if uploaded_file is None:
                 les demandes non transformées et les commandes hors demandes.
             </p>
         </div>
-        """, unsafe_allow_html=True)
+        """)
 
-    st.markdown("""
+    render_html("""
     <div class="footer">
         Plateforme d’analyse achats — Développée par <strong>Ayoub Khtira</strong> pour <strong>Ciments du Maroc</strong>
     </div>
-    """, unsafe_allow_html=True)
+    """)
 
     st.stop()
 
@@ -1191,21 +1185,11 @@ try:
     file_bytes = uploaded_file.getvalue()
     file_name = uploaded_file.name
 
-    if not is_valid_excel_file(file_bytes, file_name):
-        st.error(
-            "Le fichier importé ne semble pas être un vrai fichier Excel valide."
-        )
-        st.info(
-            "Astuce : ouvrez votre fichier dans Excel puis faites "
-            "`Fichier > Enregistrer sous > Classeur Excel (*.xlsx)`."
-        )
-        st.stop()
-
     sheet_names = get_sheet_names(file_bytes, file_name)
 
 except ImportError as e:
     st.error("Un moteur Excel requis n’est pas installé.")
-    st.info("Ajoutez ces packages dans requirements.txt : openpyxl et xlrd.")
+    st.info("Ajoute ces packages dans requirements.txt : openpyxl et xlrd.")
     st.code("pip install openpyxl xlrd")
     st.exception(e)
     st.stop()
@@ -1213,8 +1197,9 @@ except ImportError as e:
 except Exception as e:
     st.error("Erreur lors de la lecture du fichier Excel.")
     st.info(
-        "Vérifiez que le fichier n’est pas corrompu, protégé, ouvert, "
-        "ou simplement renommé en .xlsx sans être un vrai fichier Excel."
+        "Vérifie que le fichier est bien un vrai fichier Excel .xlsx ou .xls. "
+        "Si nécessaire, ouvre le fichier dans Excel puis fais : "
+        "Fichier > Enregistrer sous > Classeur Excel (*.xlsx)."
     )
     st.exception(e)
     st.stop()
@@ -1266,7 +1251,6 @@ dem_col_gac = find_column(df_demandes, ["GAc", "GAC"])
 dem_col_createur = find_column(df_demandes, ["Créé par", "Cree par", "Créateur"])
 dem_col_demandeur = find_column(df_demandes, ["Demandeur"])
 dem_col_quantite = find_column(df_demandes, ["Quantité", "Quantite"])
-dem_col_uq = find_column(df_demandes, ["UQ"])
 dem_col_date_da = find_column(df_demandes, ["Date DA", "Date demande"])
 dem_col_date_lanc = find_column(df_demandes, ["Date lanc.", "Date lanc", "Date lancement"])
 dem_col_div = find_column(df_demandes, ["Div.", "Div", "Division"])
@@ -1286,7 +1270,6 @@ cmd_col_poste = find_column(df_commandes, ["Poste"])
 cmd_col_date = find_column(df_commandes, ["Date doc.", "Date doc", "Date document"])
 cmd_col_quantite = find_column(df_commandes, ["Quantité", "Quantite"])
 cmd_col_fournisseur = find_column(df_commandes, ["Nom du fournisseur", "Fournisseur"])
-cmd_col_uac = find_column(df_commandes, ["UAc", "UAC"])
 cmd_col_prix = find_column(df_commandes, ["Prix net", "Prix"])
 cmd_col_devise = find_column(df_commandes, ["Dev.", "Devise"])
 cmd_col_gac = find_column(df_commandes, ["GAc", "GAC"])
@@ -1399,16 +1382,28 @@ with tab_demandes:
             dem_filters = {}
 
             if dem_col_gac:
-                dem_filters[dem_col_gac] = st.multiselect("GAc", get_unique_values(df_demandes, dem_col_gac))
+                dem_filters[dem_col_gac] = st.multiselect(
+                    "GAc",
+                    get_unique_values(df_demandes, dem_col_gac)
+                )
 
             if dem_col_demandeur:
-                dem_filters[dem_col_demandeur] = st.multiselect("Demandeur", get_unique_values(df_demandes, dem_col_demandeur))
+                dem_filters[dem_col_demandeur] = st.multiselect(
+                    "Demandeur",
+                    get_unique_values(df_demandes, dem_col_demandeur)
+                )
 
             if dem_col_createur:
-                dem_filters[dem_col_createur] = st.multiselect("Créateur", get_unique_values(df_demandes, dem_col_createur))
+                dem_filters[dem_col_createur] = st.multiselect(
+                    "Créateur",
+                    get_unique_values(df_demandes, dem_col_createur)
+                )
 
             if dem_col_div:
-                dem_filters[dem_col_div] = st.multiselect("Division", get_unique_values(df_demandes, dem_col_div))
+                dem_filters[dem_col_div] = st.multiselect(
+                    "Division",
+                    get_unique_values(df_demandes, dem_col_div)
+                )
 
             dem_date_range = None
 
@@ -1572,16 +1567,28 @@ with tab_commandes:
             cmd_filters = {}
 
             if cmd_col_fournisseur:
-                cmd_filters[cmd_col_fournisseur] = st.multiselect("Fournisseur", get_unique_values(df_commandes, cmd_col_fournisseur))
+                cmd_filters[cmd_col_fournisseur] = st.multiselect(
+                    "Fournisseur",
+                    get_unique_values(df_commandes, cmd_col_fournisseur)
+                )
 
             if cmd_col_div:
-                cmd_filters[cmd_col_div] = st.multiselect("Division commande", get_unique_values(df_commandes, cmd_col_div))
+                cmd_filters[cmd_col_div] = st.multiselect(
+                    "Division commande",
+                    get_unique_values(df_commandes, cmd_col_div)
+                )
 
             if cmd_col_gac:
-                cmd_filters[cmd_col_gac] = st.multiselect("GAc commande", get_unique_values(df_commandes, cmd_col_gac))
+                cmd_filters[cmd_col_gac] = st.multiselect(
+                    "GAc commande",
+                    get_unique_values(df_commandes, cmd_col_gac)
+                )
 
             if cmd_col_devise:
-                cmd_filters[cmd_col_devise] = st.multiselect("Devise", get_unique_values(df_commandes, cmd_col_devise))
+                cmd_filters[cmd_col_devise] = st.multiselect(
+                    "Devise",
+                    get_unique_values(df_commandes, cmd_col_devise)
+                )
 
             cmd_date_range = None
 
@@ -1861,8 +1868,8 @@ with tab_data:
 # FOOTER
 # ============================================================
 
-st.markdown("""
+render_html("""
 <div class="footer">
     Plateforme d’analyse achats — Développée par <strong>Ayoub Khtira</strong> pour <strong>Ciments du Maroc</strong>
 </div>
-""", unsafe_allow_html=True)
+""")
