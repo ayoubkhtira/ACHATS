@@ -640,11 +640,11 @@ def app_header():
                     </div>
 
                     <div class="right-panel">
-                        <div class="mini-title">3 click </div>
+                        <div class="mini-title">Transformez vos données en décisions, en quelques clics </div>
 
                         <div class="funnel">
                             <div class="funnel-row">
-                                <div class="funnel-label"><span class="dot"></span>Importers</div>
+                                <div class="funnel-label"><span class="dot"></span>Importer</div>
                                 <div class="funnel-value">+</div>
                             </div>
 
