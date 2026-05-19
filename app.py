@@ -640,22 +640,22 @@ def app_header():
                     </div>
 
                     <div class="right-panel">
-                        <div class="mini-title">Funnel achats</div>
+                        <div class="mini-title">3 click </div>
 
                         <div class="funnel">
                             <div class="funnel-row">
-                                <div class="funnel-label"><span class="dot"></span>Demandes</div>
-                                <div class="funnel-value">DA</div>
+                                <div class="funnel-label"><span class="dot"></span>Importers</div>
+                                <div class="funnel-value">+</div>
                             </div>
 
                             <div class="funnel-row">
-                                <div class="funnel-label"><span class="dot"></span>Commandes</div>
-                                <div class="funnel-value">PO</div>
+                                <div class="funnel-label"><span class="dot"></span>Configurer</div>
+                                <div class="funnel-value">+</div>
                             </div>
 
                             <div class="funnel-row">
-                                <div class="funnel-label"><span class="dot"></span>Analyse</div>
-                                <div class="funnel-value">Live</div>
+                                <div class="funnel-label"><span class="dot"></span>Analyser</div>
+                                <div class="funnel-value">+</div>
                             </div>
                         </div>
                     </div>
