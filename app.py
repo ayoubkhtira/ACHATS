@@ -1,225 +1,193 @@
-import streamlit as st
-import pandas as pd
-import plotly.express as px
-from io import BytesIO
-
-# ============================================================
-# CONFIGURATION
-# ============================================================
-
-st.set_page_config(
-    page_title="Procurement Analytics Platform",
-    page_icon="🛒",
-    layout="wide"
-)
-
-# CLEAN UI
-st.markdown("""
-<style>
-#MainMenu {visibility:hidden;}
-footer {visibility:hidden;}
-header {visibility:hidden;}
-</style>
-""", unsafe_allow_html=True)
-
-# ============================================================
-# CSS GLOBAL PREMIUM
-# ============================================================
-
 st.markdown("""
 <style>
 
-/* GLOBAL */
-.main { background: #f7f9fc; }
+/* ================= GLOBAL ================= */
 
-/* HEADER */
+.main {
+    background-color: #f7f9fc;
+}
+
+.block-container {
+    padding-top: 1.2rem;
+}
+
+/* ================= HEADER PREMIUM ================= */
+
 .app-header {
-    background: linear-gradient(135deg,#0f172a,#1e3a8a,#2563eb);
-    padding: 30px;
-    border-radius: 24px;
+    position: relative;
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(15,23,42,0.95),
+            rgba(30,58,138,0.92),
+            rgba(37,99,235,0.90)
+        );
+
+    padding: 34px 38px;
+    border-radius: 28px;
+    margin-bottom: 30px;
+
     color: white;
-    margin-bottom: 25px;
-    animation: fadeIn 0.6s ease;
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    backdrop-filter: blur(18px);
+
+    box-shadow: 0 10px 30px rgba(15,23,42,0.20);
+
+    animation: fadeInUp 0.7s ease;
 }
+
+.app-header::before {
+    content: "";
+    position: absolute;
+
+    width: 300px;
+    height: 300px;
+
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+
+    top: -120px;
+    right: -80px;
+
+    filter: blur(10px);
+}
+
 .title-row {
-    display:flex;
-    align-items:center;
-    gap:20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
 }
+
 .header-icon {
-    font-size:32px;
-    background:rgba(255,255,255,0.15);
-    padding:20px;
-    border-radius:18px;
-    transition:0.3s;
-}
-.header-icon:hover { transform:scale(1.1) rotate(-5deg); }
+    width: 70px;
+    height: 70px;
 
-/* SIDEBAR */
+    border-radius: 20px;
+
+    background: rgba(255,255,255,0.12);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 30px;
+
+    transition: 0.3s;
+}
+
+.header-icon:hover {
+    transform: scale(1.1) rotate(-5deg);
+}
+
+.app-header h1 {
+    margin: 0;
+    font-size: 38px;
+    font-weight: 900;
+}
+
+.app-header p {
+    margin-top: 8px;
+    color: rgba(255,255,255,0.85);
+}
+
+/* ================= SIDEBAR PREMIUM ================= */
+
 section[data-testid="stSidebar"] {
-    background: linear-gradient(180deg,#0f172a,#111827);
-}
-.sidebar-title {
-    padding:12px;
-    color:white;
-    font-weight:800;
-    background:rgba(255,255,255,0.05);
-    border-radius:12px;
-    margin-bottom:10px;
-}
-section[data-testid="stSidebar"] label {
-    color:#cbd5e1 !important;
+    background: linear-gradient(180deg, #0f172a, #111827);
 }
 
-/* TABS */
+.sidebar-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 12px;
+    border-radius: 14px;
+
+    background: rgba(255,255,255,0.05);
+    margin-bottom: 10px;
+
+    transition: 0.3s;
+}
+
+.sidebar-title:hover {
+    transform: translateX(5px);
+}
+
+.sidebar-title span {
+    color: white;
+    font-weight: 800;
+}
+
+/* inputs */
+section[data-testid="stSidebar"] label {
+    color: #cbd5e1 !important;
+}
+
+/* ================= TABS MODERN ================= */
+
 .stTabs [data-baseweb="tab-list"] {
-    background:white;
-    border-radius:16px;
-    padding:10px;
+    gap: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 16px;
 }
+
 .stTabs [data-baseweb="tab"] {
-    border-radius:12px;
-    font-weight:800;
+    border-radius: 12px;
+    padding: 10px 20px;
+
+    font-weight: 800;
+    transition: 0.3s;
 }
+
+.stTabs [data-baseweb="tab"]:hover {
+    background: #eff6ff;
+}
+
 .stTabs [aria-selected="true"] {
-    background:#2563eb !important;
-    color:white !important;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    color: white !important;
+}
+
+/* ================= CARDS ================= */
+
+.card, .metric-card {
+    transition: 0.3s;
+}
+
+.card:hover, .metric-card:hover {
+    transform: translateY(-5px);
 }
 
 /* KPI */
-.metric {
-    background:white;
-    padding:20px;
-    border-radius:16px;
-    box-shadow:0 8px 20px rgba(0,0,0,0.05);
-    transition:0.3s;
-}
-.metric:hover { transform: translateY(-5px); }
-
 .metric-value {
-    font-size:32px;
-    font-weight:900;
+    font-size: 34px;
+    font-weight: 900;
+
+    background: linear-gradient(135deg, #1e3a8a, #2563eb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-/* FOOTER */
+/* Animation */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+}
+
+/* Footer */
 .footer {
-    text-align:center;
-    margin-top:40px;
-    color:#94a3b8;
-}
-
-/* ANIMATION */
-@keyframes fadeIn {
-    from {opacity:0; transform:translateY(15px);}
-    to {opacity:1;}
+    text-align: center;
+    margin-top: 40px;
+    color: #94a3b8;
 }
 
 </style>
-""", unsafe_allow_html=True)
-
-# ============================================================
-# HEADER
-# ============================================================
-
-st.markdown("""
-<div class="app-header">
-    <div class="title-row">
-        <div class="header-icon">🛒</div>
-        <div>
-            <h1>Procurement Analytics Platform</h1>
-            <p>Analyse intelligente des demandes et commandes achats</p>
-        </div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-# ============================================================
-# SIDEBAR
-# ============================================================
-
-with st.sidebar:
-    st.markdown('<div class="sidebar-title">⚙️ Paramètres</div>', unsafe_allow_html=True)
-
-    file = st.file_uploader("Importer fichier Excel", type=["xlsx"])
-
-# ============================================================
-# FUNCTIONS
-# ============================================================
-
-@st.cache_data
-def load_excel(file):
-    return pd.read_excel(file)
-
-def metric(label, value):
-    st.markdown(f"""
-    <div class="metric">
-        <div>{label}</div>
-        <div class="metric-value">{value}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-# ============================================================
-# MAIN LOGIC
-# ============================================================
-
-if file is None:
-    st.info("Importer un fichier pour commencer")
-    st.stop()
-
-df = load_excel(file)
-
-# ============================================================
-# TABS
-# ============================================================
-
-tab1, tab2, tab3 = st.tabs(["📊 Overview", "📦 Analyse", "📄 Data"])
-
-# ============================================================
-# TAB 1
-# ============================================================
-
-with tab1:
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        metric("Lignes", len(df))
-    with col2:
-        metric("Colonnes", len(df.columns))
-    with col3:
-        metric("Valeurs nulles", df.isna().sum().sum())
-
-    if len(df.columns) >= 2:
-        fig = px.histogram(df, x=df.columns[0])
-        st.plotly_chart(fig, use_container_width=True)
-
-# ============================================================
-# TAB 2
-# ============================================================
-
-with tab2:
-
-    col = st.selectbox("Choisir colonne", df.columns)
-
-    if col:
-        fig = px.bar(
-            df[col].value_counts().head(10),
-            title="Top valeurs"
-        )
-        st.plotly_chart(fig, use_container_width=True)
-
-# ============================================================
-# TAB 3
-# ============================================================
-
-with tab3:
-    st.dataframe(df, use_container_width=True)
-
-# ============================================================
-# FOOTER
-# ============================================================
-
-st.markdown("""
-<div class="footer">
-Plateforme Achats • Développé par Ayoub KHTIRA
-</div>
 """, unsafe_allow_html=True)
