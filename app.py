@@ -31,18 +31,12 @@ PLOTLY_COLORS = [
 ]
 
 # ============================================================
-# FONCTION HTML ROBUSTE
+# FONCTION HTML
 # ============================================================
 
 def render_html(content):
-    """
-    Corrige automatiquement le HTML échappé :
-    &lt;div&gt; devient <div>
-    Puis l'affiche dans Streamlit.
-    """
     clean_content = html.unescape(content)
     st.markdown(clean_content, unsafe_allow_html=True)
-
 
 # ============================================================
 # CSS MODERNE
@@ -96,206 +90,202 @@ footer {
     visibility: hidden;
 }
 
-/* ================= HERO ================= */
+/* ============================================================
+   HEADER MODERNE ROBUSTE
+============================================================ */
 
-.app-hero {
+.app-header {
     position: relative;
     overflow: hidden;
-    background: linear-gradient(135deg, #ffffff 0%, #f8fbff 45%, #eef6ff 100%);
-    border: 1px solid rgba(226, 232, 240, 0.95);
-    border-radius: 34px;
-    padding: 34px 38px;
     margin-bottom: 28px;
-    box-shadow: var(--shadow-soft);
+    padding: 34px;
+    border-radius: 30px;
+    background:
+        radial-gradient(circle at top right, rgba(37, 99, 235, 0.16), transparent 32%),
+        linear-gradient(135deg, #ffffff 0%, #f8fafc 48%, #eef6ff 100%);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.07);
 }
 
-.app-hero::before {
-    content: "";
-    position: absolute;
-    width: 420px;
-    height: 420px;
-    right: -160px;
-    top: -160px;
-    border-radius: 999px;
-    background: rgba(37, 99, 235, 0.10);
-}
-
-.app-hero::after {
-    content: "";
-    position: absolute;
-    width: 260px;
-    height: 260px;
-    right: 120px;
-    bottom: -150px;
-    border-radius: 999px;
-    background: rgba(124, 58, 237, 0.08);
-}
-
-.hero-grid {
+.app-header-content {
     position: relative;
     z-index: 2;
     display: grid;
-    grid-template-columns: 1.45fr 0.95fr;
-    gap: 30px;
+    grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.8fr);
+    gap: 28px;
     align-items: center;
 }
 
-.hero-kicker {
+.header-badge {
     display: inline-flex;
     align-items: center;
-    gap: 9px;
-    padding: 8px 13px;
+    gap: 8px;
+    width: fit-content;
+    padding: 8px 14px;
     border-radius: 999px;
-    background: var(--primary-soft);
-    color: var(--primary-dark);
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #dbeafe;
     font-size: 13px;
     font-weight: 850;
-    border: 1px solid #dbeafe;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
 }
 
-.hero-title {
+.header-title {
     margin: 0;
-    color: var(--dark);
-    font-size: 44px;
+    max-width: 780px;
+    color: #0f172a;
+    font-size: clamp(32px, 4vw, 46px);
     line-height: 1.05;
     letter-spacing: -1.4px;
     font-weight: 950;
 }
 
-.hero-title span {
-    color: var(--primary);
+.header-title span {
+    color: #2563eb;
 }
 
-.hero-subtitle {
-    margin: 17px 0 0 0;
-    max-width: 720px;
-    color: var(--muted);
+.header-description {
+    margin-top: 16px;
+    max-width: 760px;
+    color: #64748b;
     font-size: 16px;
     line-height: 1.75;
     font-weight: 520;
 }
 
-.hero-actions {
+.header-actions {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 11px;
     margin-top: 24px;
 }
 
-.hero-badge {
+.header-chip {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: white;
-    border: 1px solid var(--border);
-    color: #334155;
     padding: 10px 14px;
-    border-radius: 14px;
-    font-size: 13px;
-    font-weight: 800;
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
-}
-
-.hero-badge i {
-    color: var(--primary);
-}
-
-.hero-illustration {
-    position: relative;
-    min-height: 250px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.5));
-    border: 1px solid rgba(226, 232, 240, 0.9);
-    border-radius: 30px;
-    box-shadow: 0 20px 48px rgba(37, 99, 235, 0.10);
-    padding: 22px;
-}
-
-.cloud-card {
-    position: absolute;
-    background: white;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.88);
+    color: #334155;
     border: 1px solid #e2e8f0;
-    border-radius: 22px;
-    box-shadow: 0 18px 35px rgba(15, 23, 42, 0.08);
-    padding: 16px;
+    font-size: 13px;
+    font-weight: 850;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.045);
 }
 
-.cloud-main {
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 190px;
-    text-align: center;
+.header-panel {
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    border-radius: 26px;
+    padding: 22px;
+    box-shadow: 0 18px 35px rgba(37, 99, 235, 0.08);
 }
 
-.cloud-main .icon {
-    width: 62px;
-    height: 62px;
-    margin: 0 auto 11px auto;
-    border-radius: 21px;
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
+.header-panel-top {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.header-icon-box {
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
     color: white;
-    font-size: 26px;
+    font-size: 25px;
+    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25);
 }
 
-.cloud-main h4 {
-    margin: 0;
-    color: var(--dark);
-    font-size: 15px;
+.header-panel-title {
+    color: #0f172a;
+    font-size: 16px;
     font-weight: 950;
+    margin: 0;
 }
 
-.cloud-main p {
-    margin: 6px 0 0 0;
-    color: var(--muted);
-    font-size: 12px;
-    line-height: 1.45;
+.header-panel-subtitle {
+    color: #64748b;
+    font-size: 12.5px;
+    font-weight: 650;
+    margin-top: 4px;
 }
 
-.floating-one {
-    top: 20px;
-    left: 18px;
-    width: 126px;
+.header-mini-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
 }
 
-.floating-two {
-    bottom: 20px;
-    right: 18px;
-    width: 140px;
+.header-mini-card {
+    padding: 15px;
+    border-radius: 18px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
 }
 
-.floating-three {
-    top: 24px;
-    right: 24px;
-    width: 118px;
-}
-
-.float-label {
-    color: var(--muted);
-    font-size: 11px;
-    font-weight: 800;
+.header-mini-label {
+    color: #64748b;
+    font-size: 11.5px;
+    font-weight: 850;
     margin-bottom: 5px;
 }
 
-.float-value {
-    color: var(--dark);
+.header-mini-value {
+    color: #0f172a;
     font-size: 19px;
     font-weight: 950;
 }
 
-.line-dot {
-    display: inline-block;
-    width: 9px;
-    height: 9px;
-    background: var(--success);
-    border-radius: 999px;
-    margin-right: 6px;
+.header-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
 }
 
-/* ================= TITRES ================= */
+.header-status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: #16a34a;
+    box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.12);
+}
+
+@media (max-width: 1100px) {
+    .app-header-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .app-header {
+        padding: 24px;
+        border-radius: 24px;
+    }
+
+    .header-mini-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header-actions {
+        flex-direction: column;
+    }
+
+    .header-chip {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ============================================================
+   TITRES
+============================================================ */
 
 .section-title {
     display: flex;
@@ -334,7 +324,9 @@ footer {
     color: var(--primary);
 }
 
-/* ================= CARTES ================= */
+/* ============================================================
+   CARTES
+============================================================ */
 
 .card {
     background: rgba(255, 255, 255, 0.92);
@@ -382,7 +374,9 @@ footer {
     margin: 0;
 }
 
-/* ================= KPI ================= */
+/* ============================================================
+   KPI
+============================================================ */
 
 .metric-card {
     position: relative;
@@ -453,7 +447,9 @@ footer {
     z-index: 2;
 }
 
-/* ================= ALERTS ================= */
+/* ============================================================
+   ALERTS
+============================================================ */
 
 .warning-box {
     background: linear-gradient(135deg, #fffbeb, #fff7ed);
@@ -480,7 +476,9 @@ footer {
     gap: 12px;
 }
 
-/* ================= TABS ================= */
+/* ============================================================
+   TABS
+============================================================ */
 
 .stTabs [data-baseweb="tab-list"] {
     gap: 10px;
@@ -504,7 +502,9 @@ footer {
     color: white !important;
 }
 
-/* ================= SIDEBAR ================= */
+/* ============================================================
+   SIDEBAR
+============================================================ */
 
 div[data-testid="stSidebar"] {
     background:
@@ -614,22 +614,84 @@ div[data-testid="stSidebar"] label {
     text-align: center;
     box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
 }
-
-@media (max-width: 1100px) {
-    .hero-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .hero-illustration {
-        min-height: 230px;
-    }
-
-    .hero-title {
-        font-size: 36px;
-    }
-}
 </style>
 """)
+
+# ============================================================
+# HEADER CORRIGÉ
+# ============================================================
+
+def app_header():
+    render_html("""
+    <div class="app-header">
+        <div class="app-header-content">
+
+            <div>
+                <div class="header-badge">
+                    🛒 Plateforme intelligente d’analyse achats
+                </div>
+
+                <h1 class="header-title">
+                    Pilotez vos <span>demandes</span> et <span>commandes achats</span> avec clarté.
+                </h1>
+
+                <p class="header-description">
+                    Centralisez l’analyse de vos demandes d’achat, commandes, fournisseurs,
+                    articles et écarts opérationnels dans une interface décisionnelle moderne,
+                    rapide et adaptée au suivi métier.
+                </p>
+
+                <div class="header-actions">
+                    <div class="header-chip">📊 Tableaux de bord dynamiques</div>
+                    <div class="header-chip">🔎 Analyse croisée DA / commandes</div>
+                    <div class="header-chip">📤 Export Excel sécurisé</div>
+                </div>
+            </div>
+
+            <div class="header-panel">
+                <div class="header-panel-top">
+                    <div class="header-icon-box">📦</div>
+                    <div>
+                        <p class="header-panel-title">Achats Analytics 360°</p>
+                        <div class="header-panel-subtitle">
+                            Suivi consolidé des flux achats
+                        </div>
+                    </div>
+                </div>
+
+                <div class="header-mini-grid">
+                    <div class="header-mini-card">
+                        <div class="header-mini-label">Module</div>
+                        <div class="header-mini-value">DA</div>
+                    </div>
+
+                    <div class="header-mini-card">
+                        <div class="header-mini-label">Analyse</div>
+                        <div class="header-mini-value">KPI</div>
+                    </div>
+
+                    <div class="header-mini-card">
+                        <div class="header-mini-label">Suivi</div>
+                        <div class="header-mini-value">
+                            <span class="header-status">
+                                <span class="header-status-dot"></span>
+                                Live
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="header-mini-card">
+                        <div class="header-mini-label">Export</div>
+                        <div class="header-mini-value">Excel</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    """)
+
+app_header()
 
 # ============================================================
 # FONCTIONS EXCEL
@@ -978,77 +1040,6 @@ def show_chart(fig, key):
     )
 
     st.plotly_chart(fig, use_container_width=True, key=key)
-
-# ============================================================
-# HEADER
-# ============================================================
-
-render_html("""
-<div class="app-hero">
-    <div class="hero-grid">
-
-        <div>
-            <div class="hero-kicker">
-                <i class="fi fi-rr-shield-check"></i>
-                Plateforme d’analyse achats intelligente
-            </div>
-
-            <h1 class="hero-title">
-                Pilotez vos <span>demandes</span> et <span>commandes achats</span> avec clarté.
-            </h1>
-
-            <p class="hero-subtitle">
-                Une interface décisionnelle moderne pour analyser les demandes d’achat,
-                suivre les commandes, comparer les articles demandés vs commandés
-                et détecter rapidement les écarts opérationnels.
-            </p>
-
-            <div class="hero-actions">
-                <div class="hero-badge">
-                    <i class="fi fi-rr-chart-histogram"></i>
-                    Tableaux de bord dynamiques
-                </div>
-                <div class="hero-badge">
-                    <i class="fi fi-rr-filter"></i>
-                    Filtres avancés
-                </div>
-                <div class="hero-badge">
-                    <i class="fi fi-rr-file-excel"></i>
-                    Export Excel
-                </div>
-            </div>
-        </div>
-
-        <div class="hero-illustration">
-            <div class="cloud-card floating-one">
-                <div class="float-label">Demandes</div>
-                <div class="float-value">DA</div>
-            </div>
-
-            <div class="cloud-card floating-three">
-                <div class="float-label">Suivi</div>
-                <div class="float-value">
-                    <span class="line-dot"></span>Live
-                </div>
-            </div>
-
-            <div class="cloud-card cloud-main">
-                <div class="icon">
-                    <i class="fi fi-br-shopping-cart"></i>
-                </div>
-                <h4>Achats 360°</h4>
-                <p>Demandes, commandes, fournisseurs et écarts dans une seule vue.</p>
-            </div>
-
-            <div class="cloud-card floating-two">
-                <div class="float-label">Analyse</div>
-                <div class="float-value">KPI</div>
-            </div>
-        </div>
-
-    </div>
-</div>
-""")
 
 # ============================================================
 # SIDEBAR - IMPORT
