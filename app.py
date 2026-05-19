@@ -640,7 +640,7 @@ def app_header():
                     </div>
 
                     <div class="right-panel">
-                        <div class="mini-title">Transformez vos données en décisions, en quelques clics </div>
+                        <div class="mini-title">Transformez vos données en décisions, en clics </div>
 
                         <div class="funnel">
                             <div class="funnel-row">
