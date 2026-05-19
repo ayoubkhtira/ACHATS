@@ -1,3 +1,24 @@
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+from io import BytesIO
+
+st.set_page_config(
+    page_title="Procurement Analytics Platform",
+    page_icon="🛒",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Clean Streamlit UI
+st.markdown("""
+<style>
+#MainMenu {visibility:hidden;}
+footer {visibility:hidden;}
+header {visibility:hidden;}
+</style>
+""", unsafe_allow_html=True)
+
 st.markdown("""
 <style>
 
@@ -191,3 +212,26 @@ section[data-testid="stSidebar"] label {
 
 </style>
 """, unsafe_allow_html=True)
+
+st.markdown("""
+<div class="app-header">
+    <div class="title-row">
+        <div class="header-icon">🛒</div>
+        <div>
+            <h1>Procurement Analytics Platform</h1>
+            <p>Dashboard intelligent pour le pilotage des demandes et commandes achats</p>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+
+with st.sidebar:
+    st.markdown('<div class="sidebar-title"><span>⚙️ Paramètres</span></div>', unsafe_allow_html=True)
+
+    uploaded_file = st.file_uploader("Importer Excel", type=["xlsx", "xls"])
+
+    st.markdown("---")
+
+    st.markdown('<div class="sidebar-title"><span>📄 Configuration</span></div>', unsafe_allow_html=True)
+``
