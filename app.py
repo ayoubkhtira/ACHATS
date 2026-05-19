@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 from io import BytesIO
 import html
+import textwrap
 
 # ============================================================
 # CONFIGURATION PAGE
@@ -31,11 +32,11 @@ PLOTLY_COLORS = [
 ]
 
 # ============================================================
-# FONCTION HTML
+# FONCTION HTML CORRIGÉE
 # ============================================================
 
 def render_html(content):
-    clean_content = html.unescape(content)
+    clean_content = html.unescape(textwrap.dedent(content)).strip()
     st.markdown(clean_content, unsafe_allow_html=True)
 
 # ============================================================
@@ -91,32 +92,54 @@ footer {
 }
 
 /* ============================================================
-   HEADER MODERNE ROBUSTE
+   HEADER SIMPLE MODERNE AVEC ANIMATION
 ============================================================ */
 
-.app-header {
+.simple-header {
     position: relative;
     overflow: hidden;
-    margin-bottom: 28px;
-    padding: 34px;
-    border-radius: 30px;
+    margin-bottom: 30px;
+    padding: 34px 38px;
+    border-radius: 28px;
     background:
-        radial-gradient(circle at top right, rgba(37, 99, 235, 0.16), transparent 32%),
-        linear-gradient(135deg, #ffffff 0%, #f8fafc 48%, #eef6ff 100%);
+        linear-gradient(135deg, rgba(255,255,255,0.97), rgba(239,246,255,0.96)),
+        radial-gradient(circle at top right, rgba(37, 99, 235, 0.18), transparent 35%);
     border: 1px solid rgba(226, 232, 240, 0.95);
     box-shadow: 0 18px 45px rgba(15, 23, 42, 0.07);
+    animation: headerFadeUp 0.75s ease both;
 }
 
-.app-header-content {
+.simple-header::before {
+    content: "";
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    right: -90px;
+    top: -120px;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.10);
+    animation: softFloat 6s ease-in-out infinite;
+}
+
+.simple-header::after {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    right: 170px;
+    bottom: -105px;
+    border-radius: 50%;
+    background: rgba(124, 58, 237, 0.08);
+    animation: softFloatReverse 7s ease-in-out infinite;
+}
+
+.simple-header-content {
     position: relative;
     z-index: 2;
-    display: grid;
-    grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.8fr);
-    gap: 28px;
-    align-items: center;
+    max-width: 980px;
 }
 
-.header-badge {
+.simple-header-badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -129,23 +152,23 @@ footer {
     font-size: 13px;
     font-weight: 850;
     margin-bottom: 16px;
+    animation: badgeSlide 0.7s ease both;
 }
 
-.header-title {
+.simple-header-title {
     margin: 0;
-    max-width: 780px;
     color: #0f172a;
-    font-size: clamp(32px, 4vw, 46px);
-    line-height: 1.05;
-    letter-spacing: -1.4px;
+    font-size: clamp(30px, 4vw, 45px);
+    line-height: 1.08;
+    letter-spacing: -1.2px;
     font-weight: 950;
 }
 
-.header-title span {
+.simple-header-title span {
     color: #2563eb;
 }
 
-.header-description {
+.simple-header-description {
     margin-top: 16px;
     max-width: 760px;
     color: #64748b;
@@ -154,14 +177,14 @@ footer {
     font-weight: 520;
 }
 
-.header-actions {
+.simple-header-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 11px;
     margin-top: 24px;
 }
 
-.header-chip {
+.simple-header-chip {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -173,111 +196,66 @@ footer {
     font-size: 13px;
     font-weight: 850;
     box-shadow: 0 8px 20px rgba(15, 23, 42, 0.045);
+    transition: all 0.25s ease;
 }
 
-.header-panel {
-    background: rgba(255, 255, 255, 0.78);
-    border: 1px solid rgba(226, 232, 240, 0.95);
-    border-radius: 26px;
-    padding: 22px;
-    box-shadow: 0 18px 35px rgba(37, 99, 235, 0.08);
+.simple-header-chip:hover {
+    transform: translateY(-3px);
+    border-color: #bfdbfe;
+    box-shadow: 0 14px 28px rgba(37, 99, 235, 0.10);
 }
 
-.header-panel-top {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 18px;
-}
-
-.header-icon-box {
-    width: 54px;
-    height: 54px;
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-    color: white;
-    font-size: 25px;
-    box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25);
-}
-
-.header-panel-title {
-    color: #0f172a;
-    font-size: 16px;
-    font-weight: 950;
-    margin: 0;
-}
-
-.header-panel-subtitle {
-    color: #64748b;
-    font-size: 12.5px;
-    font-weight: 650;
-    margin-top: 4px;
-}
-
-.header-mini-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
-}
-
-.header-mini-card {
-    padding: 15px;
-    border-radius: 18px;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-}
-
-.header-mini-label {
-    color: #64748b;
-    font-size: 11.5px;
-    font-weight: 850;
-    margin-bottom: 5px;
-}
-
-.header-mini-value {
-    color: #0f172a;
-    font-size: 19px;
-    font-weight: 950;
-}
-
-.header-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-}
-
-.header-status-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 999px;
-    background: #16a34a;
-    box-shadow: 0 0 0 5px rgba(22, 163, 74, 0.12);
-}
-
-@media (max-width: 1100px) {
-    .app-header-content {
-        grid-template-columns: 1fr;
+@keyframes headerFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-@media (max-width: 640px) {
-    .app-header {
-        padding: 24px;
+@keyframes badgeSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-14px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes softFloat {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(16px) scale(1.04);
+    }
+}
+
+@keyframes softFloatReverse {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-14px) scale(1.05);
+    }
+}
+
+@media (max-width: 768px) {
+    .simple-header {
+        padding: 26px;
         border-radius: 24px;
     }
 
-    .header-mini-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .header-actions {
+    .simple-header-actions {
         flex-direction: column;
     }
 
-    .header-chip {
+    .simple-header-chip {
         width: 100%;
         justify-content: center;
     }
@@ -618,73 +596,31 @@ div[data-testid="stSidebar"] label {
 """)
 
 # ============================================================
-# HEADER CORRIGÉ
+# HEADER SIMPLE MODERNE
 # ============================================================
 
 def app_header():
     render_html("""
-    <div class="app-header">
-        <div class="app-header-content">
+    <div class="simple-header">
+        <div class="simple-header-content">
 
-            <div>
-                <div class="header-badge">
-                    🛒 Plateforme intelligente d’analyse achats
-                </div>
-
-                <h1 class="header-title">
-                    Pilotez vos <span>demandes</span> et <span>commandes achats</span> avec clarté.
-                </h1>
-
-                <p class="header-description">
-                    Centralisez l’analyse de vos demandes d’achat, commandes, fournisseurs,
-                    articles et écarts opérationnels dans une interface décisionnelle moderne,
-                    rapide et adaptée au suivi métier.
-                </p>
-
-                <div class="header-actions">
-                    <div class="header-chip">📊 Tableaux de bord dynamiques</div>
-                    <div class="header-chip">🔎 Analyse croisée DA / commandes</div>
-                    <div class="header-chip">📤 Export Excel sécurisé</div>
-                </div>
+            <div class="simple-header-badge">
+                🛒 Plateforme intelligente d’analyse achats
             </div>
 
-            <div class="header-panel">
-                <div class="header-panel-top">
-                    <div class="header-icon-box">📦</div>
-                    <div>
-                        <p class="header-panel-title">Achats Analytics 360°</p>
-                        <div class="header-panel-subtitle">
-                            Suivi consolidé des flux achats
-                        </div>
-                    </div>
-                </div>
+            <h1 class="simple-header-title">
+                Analysez vos <span>demandes</span> et <span>commandes achats</span> en toute simplicité.
+            </h1>
 
-                <div class="header-mini-grid">
-                    <div class="header-mini-card">
-                        <div class="header-mini-label">Module</div>
-                        <div class="header-mini-value">DA</div>
-                    </div>
+            <p class="simple-header-description">
+                Une interface moderne pour suivre les demandes d’achat, piloter les commandes,
+                analyser les fournisseurs et détecter rapidement les écarts opérationnels.
+            </p>
 
-                    <div class="header-mini-card">
-                        <div class="header-mini-label">Analyse</div>
-                        <div class="header-mini-value">KPI</div>
-                    </div>
-
-                    <div class="header-mini-card">
-                        <div class="header-mini-label">Suivi</div>
-                        <div class="header-mini-value">
-                            <span class="header-status">
-                                <span class="header-status-dot"></span>
-                                Live
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="header-mini-card">
-                        <div class="header-mini-label">Export</div>
-                        <div class="header-mini-value">Excel</div>
-                    </div>
-                </div>
+            <div class="simple-header-actions">
+                <div class="simple-header-chip">📊 Tableaux de bord dynamiques</div>
+                <div class="simple-header-chip">🔎 Analyse croisée DA / commandes</div>
+                <div class="simple-header-chip">📤 Export Excel</div>
             </div>
 
         </div>
@@ -1175,7 +1111,6 @@ if uploaded_file is None:
 try:
     file_bytes = uploaded_file.getvalue()
     file_name = uploaded_file.name
-
     sheet_names = get_sheet_names(file_bytes, file_name)
 
 except ImportError as e:
