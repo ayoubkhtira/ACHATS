@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import plotly.express as px
 from io import BytesIO
@@ -10,29 +11,29 @@ import textwrap
 # ============================================================
 
 st.set_page_config(
-    page_title="Plateforme Analyse Achats",
+    page_title="Achats Analytics",
     page_icon="🛒",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # ============================================================
-# PALETTE
+# PALETTE DESIGN - DEEP GREEN COMMERCE
 # ============================================================
 
 PLOTLY_COLORS = [
-    "#2563eb",
+    "#0f5132",
     "#16a34a",
-    "#7c3aed",
-    "#f97316",
+    "#84cc16",
+    "#22c55e",
+    "#14b8a6",
+    "#f59e0b",
     "#ef4444",
-    "#0891b2",
-    "#9333ea",
-    "#0f766e"
+    "#64748b"
 ]
 
 # ============================================================
-# FONCTION HTML ROBUSTE
+# HTML SAFE
 # ============================================================
 
 def render_html(content):
@@ -49,23 +50,20 @@ render_html("""
 @import url('https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css');
 
 :root {
-    --primary: #2563eb;
-    --primary-dark: #1d4ed8;
-    --primary-soft: #eff6ff;
-    --dark: #0f172a;
-    --text: #1e293b;
-    --muted: #64748b;
-    --muted-soft: #94a3b8;
-    --bg: #f8fafc;
+    --green-dark: #052e1b;
+    --green-main: #0f5132;
+    --green-soft: #dcfce7;
+    --green-accent: #22c55e;
+    --lime: #84cc16;
     --surface: #ffffff;
-    --border: #e2e8f0;
-    --success: #16a34a;
+    --bg: #f6f8f5;
+    --text: #10251a;
+    --muted: #64748b;
+    --border: #dbe7dd;
     --warning: #f59e0b;
     --danger: #ef4444;
-    --purple: #7c3aed;
-    --orange: #f97316;
-    --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.07);
-    --shadow-card: 0 10px 30px rgba(15, 23, 42, 0.06);
+    --shadow-soft: 0 18px 45px rgba(5, 46, 27, 0.10);
+    --shadow-card: 0 12px 32px rgba(5, 46, 27, 0.08);
 }
 
 html, body, [class*="css"] {
@@ -74,13 +72,13 @@ html, body, [class*="css"] {
 
 .main {
     background:
-        radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 32%),
-        radial-gradient(circle at top right, rgba(124, 58, 237, 0.07), transparent 28%),
+        radial-gradient(circle at top left, rgba(34, 197, 94, 0.12), transparent 30%),
+        radial-gradient(circle at top right, rgba(132, 204, 22, 0.10), transparent 28%),
         var(--bg);
 }
 
 .block-container {
-    padding-top: 1.1rem;
+    padding-top: 1rem;
     padding-bottom: 2.5rem;
     max-width: 1440px;
 }
@@ -89,140 +87,6 @@ html, body, [class*="css"] {
 #MainMenu,
 footer {
     visibility: hidden;
-}
-
-/* ============================================================
-   HEADER SIMPLE MODERNE
-============================================================ */
-
-.top-header {
-    position: relative;
-    overflow: hidden;
-    margin-bottom: 28px;
-    padding: 20px 24px;
-    border-radius: 24px;
-    background:
-        linear-gradient(135deg, rgba(255,255,255,0.97), rgba(239,246,255,0.96)),
-        radial-gradient(circle at top right, rgba(37, 99, 235, 0.18), transparent 35%);
-    border: 1px solid rgba(226, 232, 240, 0.95);
-    box-shadow: 0 16px 38px rgba(15, 23, 42, 0.07);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 18px;
-    animation: headerFadeUp 0.7s ease both;
-}
-
-.top-header::before {
-    content: "";
-    position: absolute;
-    width: 220px;
-    height: 220px;
-    right: -80px;
-    top: -120px;
-    border-radius: 999px;
-    background: rgba(37, 99, 235, 0.10);
-    animation: headerBlob 6s ease-in-out infinite;
-}
-
-.top-header-left,
-.top-header-right {
-    position: relative;
-    z-index: 2;
-}
-
-.top-header-left {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-
-.top-header-logo {
-    width: 48px;
-    height: 48px;
-    border-radius: 17px;
-    background: linear-gradient(135deg, #2563eb, #7c3aed);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.25);
-}
-
-.top-header-title {
-    color: #0f172a;
-    font-size: 22px;
-    font-weight: 950;
-    letter-spacing: -0.4px;
-}
-
-.top-header-subtitle {
-    color: #64748b;
-    font-size: 13px;
-    font-weight: 650;
-    margin-top: 3px;
-}
-
-.top-header-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.top-header-pill {
-    padding: 9px 13px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.88);
-    border: 1px solid #e2e8f0;
-    color: #334155;
-    font-size: 12.5px;
-    font-weight: 850;
-    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
-}
-
-.top-header-pill.live {
-    color: #16a34a;
-    background: #ecfdf5;
-    border-color: #bbf7d0;
-}
-
-@keyframes headerFadeUp {
-    from {
-        opacity: 0;
-        transform: translateY(14px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes headerBlob {
-    0%, 100% {
-        transform: translateY(0) scale(1);
-    }
-    50% {
-        transform: translateY(14px) scale(1.05);
-    }
-}
-
-@media (max-width: 768px) {
-    .top-header {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 20px;
-    }
-
-    .top-header-right {
-        width: 100%;
-        flex-wrap: wrap;
-    }
-
-    .top-header-pill {
-        flex: 1;
-        text-align: center;
-    }
 }
 
 /* ============================================================
@@ -235,8 +99,8 @@ footer {
     gap: 12px;
     font-size: 22px;
     font-weight: 950;
-    color: var(--dark);
-    margin: 24px 0 18px 0;
+    color: var(--green-dark);
+    margin: 26px 0 18px 0;
     letter-spacing: -0.35px;
 }
 
@@ -244,8 +108,8 @@ footer {
     width: 42px;
     height: 42px;
     border-radius: 15px;
-    background: var(--primary-soft);
-    color: var(--primary);
+    background: var(--green-soft);
+    color: var(--green-main);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -263,83 +127,33 @@ footer {
 }
 
 .sub-section-title i {
-    color: var(--primary);
+    color: var(--green-main);
 }
 
 /* ============================================================
-   CARTES
-============================================================ */
-
-.card {
-    background: rgba(255, 255, 255, 0.92);
-    padding: 25px;
-    border-radius: 24px;
-    box-shadow: var(--shadow-card);
-    border: 1px solid var(--border);
-    min-height: 175px;
-    transition: all 0.25s ease;
-}
-
-.card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 18px 42px rgba(15, 23, 42, 0.09);
-    border-color: #cbd5e1;
-}
-
-.card h4 {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--dark);
-    margin: 0 0 11px 0;
-    font-size: 17px;
-    font-weight: 950;
-}
-
-.pro-icon {
-    min-width: 42px;
-    width: 42px;
-    height: 42px;
-    border-radius: 15px;
-    background: var(--primary-soft);
-    color: var(--primary);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-}
-
-.small-note {
-    font-size: 13.5px;
-    color: var(--muted);
-    line-height: 1.65;
-    margin: 0;
-}
-
-/* ============================================================
-   KPI
+   KPI CARDS
 ============================================================ */
 
 .metric-card {
     position: relative;
     overflow: hidden;
-    background: white;
-    padding: 22px 22px;
-    border-radius: 23px;
+    background: linear-gradient(180deg, #ffffff, #fbfffb);
+    padding: 22px;
+    border-radius: 24px;
     box-shadow: var(--shadow-card);
     border: 1px solid var(--border);
-    min-height: 135px;
+    min-height: 136px;
 }
 
 .metric-card::before {
     content: "";
     position: absolute;
-    right: -35px;
-    top: -35px;
-    width: 105px;
-    height: 105px;
+    right: -38px;
+    top: -38px;
+    width: 110px;
+    height: 110px;
     border-radius: 999px;
-    background: var(--metric-soft, #eff6ff);
+    background: var(--metric-soft, #dcfce7);
 }
 
 .metric-top {
@@ -350,43 +164,90 @@ footer {
     z-index: 2;
 }
 
-.metric-icon {
-    width: 39px;
-    height: 39px;
-    border-radius: 14px;
-    background: var(--metric-soft, #eff6ff);
-    color: var(--metric-color, #2563eb);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 17px;
-}
-
 .metric-label {
     font-size: 13px;
     color: var(--muted);
     font-weight: 850;
     margin-bottom: 8px;
-    position: relative;
-    z-index: 2;
 }
 
 .metric-value {
     font-size: 30px;
-    color: var(--dark);
+    color: var(--green-dark);
     font-weight: 950;
     letter-spacing: -0.7px;
-    position: relative;
-    z-index: 2;
 }
 
 .metric-help {
     font-size: 12px;
-    color: var(--muted-soft);
-    margin-top: 6px;
+    color: #7b8b80;
+    margin-top: 7px;
     line-height: 1.45;
+}
+
+.metric-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 15px;
+    background: var(--metric-soft, #dcfce7);
+    color: var(--metric-color, #0f5132);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+/* ============================================================
+   COMMERCE FEATURE CARDS
+============================================================ */
+
+.card {
     position: relative;
-    z-index: 2;
+    overflow: hidden;
+    background: linear-gradient(180deg, #ffffff, #fbfffb);
+    padding: 26px;
+    border-radius: 26px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border);
+    min-height: 178px;
+    transition: all 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 44px rgba(5, 46, 27, 0.12);
+    border-color: #bbf7d0;
+}
+
+.card h4 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--green-dark);
+    margin: 0 0 11px 0;
+    font-size: 17px;
+    font-weight: 950;
+}
+
+.pro-icon {
+    min-width: 44px;
+    width: 44px;
+    height: 44px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #0f5132, #22c55e);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 12px 25px rgba(15, 81, 50, 0.22);
+}
+
+.small-note {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin: 0;
 }
 
 /* ============================================================
@@ -394,21 +255,21 @@ footer {
 ============================================================ */
 
 .warning-box {
-    background: linear-gradient(135deg, #fffbeb, #fff7ed);
-    border: 1px solid #fde68a;
-    color: #92400e;
+    background: linear-gradient(135deg, #fefce8, #f0fdf4);
+    border: 1px solid #d9f99d;
+    color: #365314;
     padding: 17px 19px;
-    border-radius: 18px;
+    border-radius: 20px;
     font-weight: 820;
     display: flex;
     align-items: center;
     gap: 11px;
-    box-shadow: 0 10px 25px rgba(245, 158, 11, 0.08);
+    box-shadow: 0 10px 25px rgba(132, 204, 22, 0.10);
 }
 
 .info-card {
     background: white;
-    border: 1px dashed #cbd5e1;
+    border: 1px dashed #bbf7d0;
     color: var(--muted);
     padding: 22px;
     border-radius: 22px;
@@ -428,7 +289,7 @@ footer {
     border: 1px solid var(--border);
     padding: 8px;
     border-radius: 20px;
-    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 8px 22px rgba(5, 46, 27, 0.04);
 }
 
 .stTabs [data-baseweb="tab"] {
@@ -440,7 +301,7 @@ footer {
 }
 
 .stTabs [aria-selected="true"] {
-    background: var(--dark) !important;
+    background: var(--green-dark) !important;
     color: white !important;
 }
 
@@ -450,8 +311,8 @@ footer {
 
 div[data-testid="stSidebar"] {
     background:
-        radial-gradient(circle at top left, rgba(37, 99, 235, 0.28), transparent 35%),
-        linear-gradient(180deg, #0f172a 0%, #111827 100%);
+        radial-gradient(circle at top left, rgba(34, 197, 94, 0.26), transparent 35%),
+        linear-gradient(180deg, #052e1b 0%, #0b2116 100%);
 }
 
 div[data-testid="stSidebar"] * {
@@ -459,7 +320,7 @@ div[data-testid="stSidebar"] * {
 }
 
 div[data-testid="stSidebar"] label {
-    color: #e5e7eb !important;
+    color: #ecfdf5 !important;
     font-weight: 800 !important;
     font-size: 13px !important;
 }
@@ -482,11 +343,11 @@ div[data-testid="stSidebar"] label {
 }
 
 .sidebar-brand-title i {
-    color: #93c5fd;
+    color: #86efac;
 }
 
 .sidebar-brand-subtitle {
-    color: #cbd5e1;
+    color: #d1fae5;
     font-size: 12.5px;
     line-height: 1.55;
 }
@@ -505,36 +366,40 @@ div[data-testid="stSidebar"] label {
     width: 31px;
     height: 31px;
     border-radius: 11px;
-    background: rgba(147, 197, 253, 0.16);
-    color: #93c5fd;
+    background: rgba(134, 239, 172, 0.16);
+    color: #86efac;
     display: inline-flex;
     align-items: center;
     justify-content: center;
 }
 
 .sidebar-note {
-    color: #cbd5e1;
+    color: #d1fae5;
     font-size: 13px;
     line-height: 1.55;
     margin-bottom: 14px;
 }
 
+/* ============================================================
+   BUTTONS / DATA / CHARTS
+============================================================ */
+
 .stDownloadButton > button,
 .stButton > button {
     border-radius: 15px !important;
-    border: 1px solid #dbeafe !important;
-    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    border: 1px solid #bbf7d0 !important;
+    background: linear-gradient(135deg, #0f5132, #16a34a) !important;
     color: white !important;
     font-weight: 900 !important;
     padding: 0.7rem 1rem !important;
-    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.22);
+    box-shadow: 0 10px 25px rgba(15, 81, 50, 0.25);
 }
 
 [data-testid="stDataFrame"] {
     border-radius: 20px;
     overflow: hidden;
     border: 1px solid var(--border);
-    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.045);
+    box-shadow: 0 10px 28px rgba(5, 46, 27, 0.05);
 }
 
 [data-testid="stPlotlyChart"] {
@@ -554,32 +419,298 @@ div[data-testid="stSidebar"] label {
     color: var(--muted);
     font-size: 12.5px;
     text-align: center;
-    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 8px 22px rgba(5, 46, 27, 0.04);
 }
 </style>
 """)
 
 # ============================================================
-# HEADER COMPACT
+# HEADER WEBFLOW-STYLE AVEC GSAP
 # ============================================================
 
 def app_header():
-    render_html("""
-    <div class="top-header">
-        <div class="top-header-left">
-            <div class="top-header-logo">🛒</div>
-            <div>
-                <div class="top-header-title">Achats Analytics</div>
-                <div class="top-header-subtitle">Tableau de bord décisionnel achats</div>
-            </div>
-        </div>
+    components.html(
+        """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+            <style>
+                * {
+                    box-sizing: border-box;
+                }
 
-        <div class="top-header-right">
-            <span class="top-header-pill live">● Live</span>
-            <span class="top-header-pill">Excel Ready</span>
-        </div>
-    </div>
-    """)
+                body {
+                    margin: 0;
+                    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+                    background: transparent;
+                }
+
+                .commerce-header {
+                    position: relative;
+                    overflow: hidden;
+                    min-height: 190px;
+                    padding: 28px 32px;
+                    border-radius: 30px;
+                    background:
+                        radial-gradient(circle at 85% 18%, rgba(132, 204, 22, 0.22), transparent 30%),
+                        radial-gradient(circle at 70% 90%, rgba(34, 197, 94, 0.16), transparent 28%),
+                        linear-gradient(135deg, #052e1b 0%, #0f5132 52%, #14532d 100%);
+                    border: 1px solid rgba(187, 247, 208, 0.18);
+                    box-shadow: 0 24px 60px rgba(5, 46, 27, 0.25);
+                    color: white;
+                }
+
+                .commerce-header::before {
+                    content: "";
+                    position: absolute;
+                    width: 320px;
+                    height: 320px;
+                    border-radius: 999px;
+                    right: -120px;
+                    top: -160px;
+                    background: rgba(132, 204, 22, 0.18);
+                    filter: blur(2px);
+                }
+
+                .commerce-header::after {
+                    content: "";
+                    position: absolute;
+                    width: 220px;
+                    height: 220px;
+                    border-radius: 999px;
+                    left: 48%;
+                    bottom: -150px;
+                    background: rgba(34, 197, 94, 0.18);
+                }
+
+                .header-grid {
+                    position: relative;
+                    z-index: 3;
+                    display: grid;
+                    grid-template-columns: 1.35fr 0.75fr;
+                    gap: 26px;
+                    align-items: center;
+                }
+
+                .eyebrow {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 8px 13px;
+                    border-radius: 999px;
+                    color: #dcfce7;
+                    background: rgba(255,255,255,0.10);
+                    border: 1px solid rgba(255,255,255,0.16);
+                    font-size: 12.5px;
+                    font-weight: 850;
+                    margin-bottom: 15px;
+                    backdrop-filter: blur(12px);
+                }
+
+                .title {
+                    margin: 0;
+                    max-width: 780px;
+                    font-size: clamp(30px, 4vw, 48px);
+                    line-height: 1.05;
+                    letter-spacing: -1.45px;
+                    font-weight: 950;
+                }
+
+                .title span {
+                    color: #a3e635;
+                }
+
+                .description {
+                    max-width: 730px;
+                    margin: 15px 0 0 0;
+                    color: #d1fae5;
+                    font-size: 15.5px;
+                    line-height: 1.7;
+                    font-weight: 520;
+                }
+
+                .chips {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                    margin-top: 22px;
+                }
+
+                .chip {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 10px 13px;
+                    border-radius: 14px;
+                    background: rgba(255,255,255,0.10);
+                    border: 1px solid rgba(255,255,255,0.15);
+                    color: #f0fdf4;
+                    font-size: 12.5px;
+                    font-weight: 850;
+                    backdrop-filter: blur(12px);
+                }
+
+                .right-panel {
+                    position: relative;
+                    min-height: 132px;
+                    padding: 18px;
+                    border-radius: 24px;
+                    background: rgba(255,255,255,0.10);
+                    border: 1px solid rgba(255,255,255,0.15);
+                    backdrop-filter: blur(14px);
+                }
+
+                .mini-title {
+                    color: #dcfce7;
+                    font-size: 12px;
+                    font-weight: 850;
+                    margin-bottom: 12px;
+                }
+
+                .funnel {
+                    display: grid;
+                    gap: 10px;
+                }
+
+                .funnel-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 12px;
+                    padding: 11px 12px;
+                    border-radius: 15px;
+                    background: rgba(255,255,255,0.10);
+                    border: 1px solid rgba(255,255,255,0.10);
+                }
+
+                .funnel-label {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    color: white;
+                    font-size: 13px;
+                    font-weight: 850;
+                }
+
+                .funnel-value {
+                    color: #a3e635;
+                    font-weight: 950;
+                    font-size: 13px;
+                }
+
+                .dot {
+                    width: 9px;
+                    height: 9px;
+                    border-radius: 999px;
+                    background: #a3e635;
+                    box-shadow: 0 0 0 5px rgba(163, 230, 53, 0.14);
+                }
+
+                @media (max-width: 900px) {
+                    .commerce-header {
+                        padding: 24px;
+                    }
+
+                    .header-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+            </style>
+        </head>
+
+        <body>
+            <div class="commerce-header">
+                <div class="header-grid">
+
+                    <div class="header-left">
+                        <div class="eyebrow">
+                            🛒 Commerce Intelligence · Achats Analytics
+                        </div>
+
+                        <h1 class="title">
+                            Pilotez vos <span>demandes</span>, commandes et fournisseurs.
+                        </h1>
+
+                        <p class="description">
+                            Une plateforme décisionnelle pensée pour analyser les flux achats,
+                            détecter les écarts, suivre les volumes et accélérer le pilotage opérationnel.
+                        </p>
+
+                        <div class="chips">
+                            <div class="chip">📊 KPI dynamiques</div>
+                            <div class="chip">📦 Suivi articles</div>
+                            <div class="chip">🔎 Analyse DA / commandes</div>
+                            <div class="chip">📤 Export Excel</div>
+                        </div>
+                    </div>
+
+                    <div class="right-panel">
+                        <div class="mini-title">Funnel achats</div>
+
+                        <div class="funnel">
+                            <div class="funnel-row">
+                                <div class="funnel-label"><span class="dot"></span>Demandes</div>
+                                <div class="funnel-value">DA</div>
+                            </div>
+
+                            <div class="funnel-row">
+                                <div class="funnel-label"><span class="dot"></span>Commandes</div>
+                                <div class="funnel-value">PO</div>
+                            </div>
+
+                            <div class="funnel-row">
+                                <div class="funnel-label"><span class="dot"></span>Analyse</div>
+                                <div class="funnel-value">Live</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <script>
+                if (window.gsap) {
+                    gsap.from(".commerce-header", {
+                        opacity: 0,
+                        y: 22,
+                        duration: 0.8,
+                        ease: "power3.out"
+                    });
+
+                    gsap.from(".eyebrow, .title, .description, .chip", {
+                        opacity: 0,
+                        y: 18,
+                        duration: 0.75,
+                        stagger: 0.08,
+                        delay: 0.18,
+                        ease: "power3.out"
+                    });
+
+                    gsap.from(".right-panel", {
+                        opacity: 0,
+                        scale: 0.94,
+                        x: 22,
+                        duration: 0.85,
+                        delay: 0.35,
+                        ease: "power3.out"
+                    });
+
+                    gsap.to(".dot", {
+                        scale: 1.25,
+                        duration: 1.2,
+                        repeat: -1,
+                        yoyo: true,
+                        ease: "sine.inOut"
+                    });
+                }
+            </script>
+        </body>
+        </html>
+        """,
+        height=215,
+        scrolling=False
+    )
 
 app_header()
 
@@ -706,20 +837,19 @@ def format_amount(value):
 
 def get_soft_color(color):
     mapping = {
-        "#2563eb": "#eff6ff",
-        "#16a34a": "#ecfdf5",
-        "#7c3aed": "#f5f3ff",
-        "#f97316": "#fff7ed",
-        "#f59e0b": "#fffbeb",
-        "#ef4444": "#fef2f2",
-        "#0891b2": "#ecfeff",
-        "#9333ea": "#faf5ff",
-        "#0f766e": "#f0fdfa"
+        "#0f5132": "#dcfce7",
+        "#16a34a": "#dcfce7",
+        "#84cc16": "#ecfccb",
+        "#22c55e": "#dcfce7",
+        "#14b8a6": "#ccfbf1",
+        "#f59e0b": "#fef3c7",
+        "#ef4444": "#fee2e2",
+        "#64748b": "#f1f5f9"
     }
-    return mapping.get(color, "#eff6ff")
+    return mapping.get(color, "#dcfce7")
 
 
-def metric_card(label, value, help_text="", color="#2563eb", icon="fi fi-rr-stats"):
+def metric_card(label, value, help_text="", color="#0f5132", icon="fi fi-rr-stats"):
     soft = get_soft_color(color)
 
     render_html(
@@ -882,9 +1012,9 @@ def data_quality_card(df):
     c1, c2, c3, c4 = st.columns(4)
 
     with c1:
-        metric_card("Lignes", format_number(total_rows), "Nombre total d'enregistrements", "#2563eb", "fi fi-rr-list")
+        metric_card("Lignes", format_number(total_rows), "Nombre total d'enregistrements", "#0f5132", "fi fi-rr-list")
     with c2:
-        metric_card("Colonnes", format_number(total_cols), "Champs disponibles", "#7c3aed", "fi fi-rr-columns-3")
+        metric_card("Colonnes", format_number(total_cols), "Champs disponibles", "#16a34a", "fi fi-rr-columns-3")
     with c3:
         metric_card("Cellules vides", format_number(missing_cells), "Valeurs manquantes", "#f59e0b", "fi fi-rr-triangle-warning")
     with c4:
@@ -895,7 +1025,7 @@ def show_chart(fig, key):
     fig.update_layout(
         template="plotly_white",
         title=dict(
-            font=dict(size=17, color="#0f172a"),
+            font=dict(size=17, color="#052e1b"),
             x=0.02,
             xanchor="left"
         ),
@@ -918,15 +1048,15 @@ def show_chart(fig, key):
 
     fig.update_xaxes(
         showgrid=True,
-        gridcolor="#eef2f7",
+        gridcolor="#edf7ef",
         zeroline=False,
-        linecolor="#e2e8f0"
+        linecolor="#dbe7dd"
     )
 
     fig.update_yaxes(
         showgrid=False,
         zeroline=False,
-        linecolor="#e2e8f0"
+        linecolor="#dbe7dd"
     )
 
     st.plotly_chart(fig, use_container_width=True, key=key)
@@ -1196,13 +1326,13 @@ with tab_overview:
     c1, c2, c3, c4 = st.columns(4)
 
     with c1:
-        metric_card("Demandes d'achat", format_number(nb_demandes), "Nombre de DA uniques", "#2563eb", "fi fi-rr-file-invoice")
+        metric_card("Demandes d'achat", format_number(nb_demandes), "Nombre de DA uniques", "#0f5132", "fi fi-rr-file-invoice")
     with c2:
         metric_card("Commandes achats", format_number(nb_commandes), "Nombre de commandes uniques", "#16a34a", "fi fi-rr-shopping-cart")
     with c3:
-        metric_card("Fournisseurs", format_number(nb_fournisseurs), "Fournisseurs distincts", "#7c3aed", "fi fi-rr-users-alt")
+        metric_card("Fournisseurs", format_number(nb_fournisseurs), "Fournisseurs distincts", "#84cc16", "fi fi-rr-users-alt")
     with c4:
-        metric_card("Montant commandes", format_amount(montant_total), "Quantité × Prix net", "#f97316", "fi fi-rr-coins")
+        metric_card("Montant commandes", format_amount(montant_total), "Quantité × Prix net", "#f59e0b", "fi fi-rr-coins")
 
     sub_section_title("fi fi-rr-chart-histogram", "Synthèse visuelle")
 
@@ -1310,13 +1440,13 @@ with tab_demandes:
         c1, c2, c3, c4 = st.columns(4)
 
         with c1:
-            metric_card("DA uniques", format_number(total_da), "Demandes distinctes", "#2563eb", "fi fi-rr-file-invoice")
+            metric_card("DA uniques", format_number(total_da), "Demandes distinctes", "#0f5132", "fi fi-rr-file-invoice")
         with c2:
             metric_card("Lignes DA", format_number(total_lignes), "Postes de demandes", "#16a34a", "fi fi-rr-list")
         with c3:
-            metric_card("Articles", format_number(total_articles), "Articles distincts", "#7c3aed", "fi fi-rr-box")
+            metric_card("Articles", format_number(total_articles), "Articles distincts", "#84cc16", "fi fi-rr-box")
         with c4:
-            metric_card("Quantité totale", format_number(total_quantite), "Somme des quantités", "#f97316", "fi fi-rr-calculator")
+            metric_card("Quantité totale", format_number(total_quantite), "Somme des quantités", "#f59e0b", "fi fi-rr-calculator")
 
         sub_section_title("fi fi-rr-chart-histogram", "Analyses principales")
 
@@ -1495,13 +1625,13 @@ with tab_commandes:
         c1, c2, c3, c4 = st.columns(4)
 
         with c1:
-            metric_card("Commandes uniques", format_number(total_cmd), "Documents achats distincts", "#2563eb", "fi fi-rr-shopping-cart")
+            metric_card("Commandes uniques", format_number(total_cmd), "Documents achats distincts", "#0f5132", "fi fi-rr-shopping-cart")
         with c2:
             metric_card("Lignes commandes", format_number(total_lignes_cmd), "Postes de commandes", "#16a34a", "fi fi-rr-list")
         with c3:
-            metric_card("Fournisseurs", format_number(total_fournisseurs), "Fournisseurs distincts", "#7c3aed", "fi fi-rr-users-alt")
+            metric_card("Fournisseurs", format_number(total_fournisseurs), "Fournisseurs distincts", "#84cc16", "fi fi-rr-users-alt")
         with c4:
-            metric_card("Montant total", format_amount(total_montant), "Quantité × Prix net", "#f97316", "fi fi-rr-coins")
+            metric_card("Montant total", format_amount(total_montant), "Quantité × Prix net", "#f59e0b", "fi fi-rr-coins")
 
         sub_section_title("fi fi-rr-chart-histogram", "Analyses fournisseurs, articles et divisions")
 
@@ -1664,11 +1794,11 @@ with tab_compare:
         c1, c2, c3, c4 = st.columns(4)
 
         with c1:
-            metric_card("Articles demandés", format_number(len(articles_demandes)), "Articles dans les DA", "#2563eb", "fi fi-rr-box")
+            metric_card("Articles demandés", format_number(len(articles_demandes)), "Articles dans les DA", "#0f5132", "fi fi-rr-box")
         with c2:
             metric_card("Articles commandés", format_number(len(articles_commandes)), "Articles dans les commandes", "#16a34a", "fi fi-rr-shopping-cart")
         with c3:
-            metric_card("Articles communs", format_number(len(articles_communs)), f"Taux couverture : {taux_couverture:.1f}%", "#7c3aed", "fi fi-rr-check-circle")
+            metric_card("Articles communs", format_number(len(articles_communs)), f"Taux couverture : {taux_couverture:.1f}%", "#84cc16", "fi fi-rr-check-circle")
         with c4:
             metric_card("Demandés non commandés", format_number(len(articles_non_commandes)), "Écart potentiel", "#ef4444", "fi fi-rr-triangle-warning")
 
