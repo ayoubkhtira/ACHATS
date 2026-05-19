@@ -32,7 +32,7 @@ PLOTLY_COLORS = [
 ]
 
 # ============================================================
-# FONCTION HTML CORRIGÉE
+# FONCTION HTML ROBUSTE
 # ============================================================
 
 def render_html(content):
@@ -40,7 +40,7 @@ def render_html(content):
     st.markdown(clean_content, unsafe_allow_html=True)
 
 # ============================================================
-# CSS MODERNE
+# CSS GLOBAL
 # ============================================================
 
 render_html("""
@@ -92,123 +92,105 @@ footer {
 }
 
 /* ============================================================
-   HEADER SIMPLE MODERNE AVEC ANIMATION
+   HEADER SIMPLE MODERNE
 ============================================================ */
 
-.simple-header {
+.top-header {
     position: relative;
     overflow: hidden;
-    margin-bottom: 30px;
-    padding: 34px 38px;
-    border-radius: 28px;
+    margin-bottom: 28px;
+    padding: 20px 24px;
+    border-radius: 24px;
     background:
         linear-gradient(135deg, rgba(255,255,255,0.97), rgba(239,246,255,0.96)),
         radial-gradient(circle at top right, rgba(37, 99, 235, 0.18), transparent 35%);
     border: 1px solid rgba(226, 232, 240, 0.95);
-    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.07);
-    animation: headerFadeUp 0.75s ease both;
+    box-shadow: 0 16px 38px rgba(15, 23, 42, 0.07);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    animation: headerFadeUp 0.7s ease both;
 }
 
-.simple-header::before {
+.top-header::before {
     content: "";
     position: absolute;
-    width: 280px;
-    height: 280px;
-    right: -90px;
+    width: 220px;
+    height: 220px;
+    right: -80px;
     top: -120px;
-    border-radius: 50%;
+    border-radius: 999px;
     background: rgba(37, 99, 235, 0.10);
-    animation: softFloat 6s ease-in-out infinite;
+    animation: headerBlob 6s ease-in-out infinite;
 }
 
-.simple-header::after {
-    content: "";
-    position: absolute;
-    width: 180px;
-    height: 180px;
-    right: 170px;
-    bottom: -105px;
-    border-radius: 50%;
-    background: rgba(124, 58, 237, 0.08);
-    animation: softFloatReverse 7s ease-in-out infinite;
-}
-
-.simple-header-content {
+.top-header-left,
+.top-header-right {
     position: relative;
     z-index: 2;
-    max-width: 980px;
 }
 
-.simple-header-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    width: fit-content;
-    padding: 8px 14px;
-    border-radius: 999px;
-    background: #eff6ff;
-    color: #1d4ed8;
-    border: 1px solid #dbeafe;
-    font-size: 13px;
-    font-weight: 850;
-    margin-bottom: 16px;
-    animation: badgeSlide 0.7s ease both;
-}
-
-.simple-header-title {
-    margin: 0;
-    color: #0f172a;
-    font-size: clamp(30px, 4vw, 45px);
-    line-height: 1.08;
-    letter-spacing: -1.2px;
-    font-weight: 950;
-}
-
-.simple-header-title span {
-    color: #2563eb;
-}
-
-.simple-header-description {
-    margin-top: 16px;
-    max-width: 760px;
-    color: #64748b;
-    font-size: 16px;
-    line-height: 1.75;
-    font-weight: 520;
-}
-
-.simple-header-actions {
+.top-header-left {
     display: flex;
-    flex-wrap: wrap;
-    gap: 11px;
-    margin-top: 24px;
-}
-
-.simple-header-chip {
-    display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    border-radius: 15px;
-    background: rgba(255, 255, 255, 0.88);
-    color: #334155;
-    border: 1px solid #e2e8f0;
-    font-size: 13px;
-    font-weight: 850;
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.045);
-    transition: all 0.25s ease;
+    gap: 14px;
 }
 
-.simple-header-chip:hover {
-    transform: translateY(-3px);
-    border-color: #bfdbfe;
-    box-shadow: 0 14px 28px rgba(37, 99, 235, 0.10);
+.top-header-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 17px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.25);
+}
+
+.top-header-title {
+    color: #0f172a;
+    font-size: 22px;
+    font-weight: 950;
+    letter-spacing: -0.4px;
+}
+
+.top-header-subtitle {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 650;
+    margin-top: 3px;
+}
+
+.top-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.top-header-pill {
+    padding: 9px 13px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.88);
+    border: 1px solid #e2e8f0;
+    color: #334155;
+    font-size: 12.5px;
+    font-weight: 850;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.04);
+}
+
+.top-header-pill.live {
+    color: #16a34a;
+    background: #ecfdf5;
+    border-color: #bbf7d0;
 }
 
 @keyframes headerFadeUp {
     from {
         opacity: 0;
-        transform: translateY(18px);
+        transform: translateY(14px);
     }
     to {
         opacity: 1;
@@ -216,48 +198,30 @@ footer {
     }
 }
 
-@keyframes badgeSlide {
-    from {
-        opacity: 0;
-        transform: translateX(-14px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes softFloat {
+@keyframes headerBlob {
     0%, 100% {
         transform: translateY(0) scale(1);
     }
     50% {
-        transform: translateY(16px) scale(1.04);
-    }
-}
-
-@keyframes softFloatReverse {
-    0%, 100% {
-        transform: translateY(0) scale(1);
-    }
-    50% {
-        transform: translateY(-14px) scale(1.05);
+        transform: translateY(14px) scale(1.05);
     }
 }
 
 @media (max-width: 768px) {
-    .simple-header {
-        padding: 26px;
-        border-radius: 24px;
-    }
-
-    .simple-header-actions {
+    .top-header {
         flex-direction: column;
+        align-items: flex-start;
+        padding: 20px;
     }
 
-    .simple-header-chip {
+    .top-header-right {
         width: 100%;
-        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .top-header-pill {
+        flex: 1;
+        text-align: center;
     }
 }
 
@@ -596,33 +560,23 @@ div[data-testid="stSidebar"] label {
 """)
 
 # ============================================================
-# HEADER SIMPLE MODERNE
+# HEADER COMPACT
 # ============================================================
 
 def app_header():
     render_html("""
-    <div class="simple-header">
-        <div class="simple-header-content">
-
-            <div class="simple-header-badge">
-                🛒 Plateforme intelligente d’analyse achats
+    <div class="top-header">
+        <div class="top-header-left">
+            <div class="top-header-logo">🛒</div>
+            <div>
+                <div class="top-header-title">Achats Analytics</div>
+                <div class="top-header-subtitle">Tableau de bord décisionnel achats</div>
             </div>
+        </div>
 
-            <h1 class="simple-header-title">
-                Analysez vos <span>demandes</span> et <span>commandes achats</span> en toute simplicité.
-            </h1>
-
-            <p class="simple-header-description">
-                Une interface moderne pour suivre les demandes d’achat, piloter les commandes,
-                analyser les fournisseurs et détecter rapidement les écarts opérationnels.
-            </p>
-
-            <div class="simple-header-actions">
-                <div class="simple-header-chip">📊 Tableaux de bord dynamiques</div>
-                <div class="simple-header-chip">🔎 Analyse croisée DA / commandes</div>
-                <div class="simple-header-chip">📤 Export Excel</div>
-            </div>
-
+        <div class="top-header-right">
+            <span class="top-header-pill live">● Live</span>
+            <span class="top-header-pill">Excel Ready</span>
         </div>
     </div>
     """)
