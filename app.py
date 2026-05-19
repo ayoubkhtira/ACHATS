@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # ============================================================
-# PALETTE GRAPHIQUES
+# PALETTE
 # ============================================================
 
 PLOTLY_COLORS = [
@@ -30,7 +30,7 @@ PLOTLY_COLORS = [
 ]
 
 # ============================================================
-# CSS PROFESSIONNEL - STYLE SAAS / WIZ INSPIRED
+# CSS MODERNE
 # ============================================================
 
 st.markdown("""
@@ -38,44 +38,22 @@ st.markdown("""
 @import url('https://cdn-uicons.flaticon.com/2.6.0/uicons-bold-rounded/css/uicons-bold-rounded.css');
 @import url('https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css');
 
-/* ============================================================
-   THEME GLOBAL
-============================================================ */
-
 :root {
     --primary: #2563eb;
     --primary-dark: #1d4ed8;
     --primary-soft: #eff6ff;
-
     --dark: #0f172a;
     --text: #1e293b;
     --muted: #64748b;
     --muted-soft: #94a3b8;
-
     --bg: #f8fafc;
     --surface: #ffffff;
-    --surface-soft: #f1f5f9;
-
     --border: #e2e8f0;
-    --border-soft: #edf2f7;
-
     --success: #16a34a;
-    --success-soft: #ecfdf5;
-
     --warning: #f59e0b;
-    --warning-soft: #fffbeb;
-
     --danger: #ef4444;
-    --danger-soft: #fef2f2;
-
     --purple: #7c3aed;
-    --purple-soft: #f5f3ff;
-
     --orange: #f97316;
-    --orange-soft: #fff7ed;
-
-    --radius-xl: 24px;
-    --radius-lg: 18px;
     --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.07);
     --shadow-card: 0 10px 30px rgba(15, 23, 42, 0.06);
 }
@@ -97,21 +75,13 @@ html, body, [class*="css"] {
     max-width: 1440px;
 }
 
-[data-testid="stDecoration"] {
-    display: none;
-}
-
-#MainMenu {
-    visibility: hidden;
-}
-
+[data-testid="stDecoration"],
+#MainMenu,
 footer {
     visibility: hidden;
 }
 
-/* ============================================================
-   HERO HEADER
-============================================================ */
+/* ================= HERO ================= */
 
 .app-hero {
     position: relative;
@@ -216,7 +186,6 @@ footer {
     color: var(--primary);
 }
 
-/* Illustration */
 .hero-illustration {
     position: relative;
     min-height: 250px;
@@ -311,9 +280,7 @@ footer {
     margin-right: 6px;
 }
 
-/* ============================================================
-   TITRES
-============================================================ */
+/* ================= TITRES ================= */
 
 .section-title {
     display: flex;
@@ -352,14 +319,12 @@ footer {
     color: var(--primary);
 }
 
-/* ============================================================
-   CARTES
-============================================================ */
+/* ================= CARTES ================= */
 
 .card {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.92);
     padding: 25px;
-    border-radius: var(--radius-xl);
+    border-radius: 24px;
     box-shadow: var(--shadow-card);
     border: 1px solid var(--border);
     min-height: 175px;
@@ -402,9 +367,7 @@ footer {
     margin: 0;
 }
 
-/* ============================================================
-   KPI
-============================================================ */
+/* ================= KPI ================= */
 
 .metric-card {
     position: relative;
@@ -475,9 +438,7 @@ footer {
     z-index: 2;
 }
 
-/* ============================================================
-   ALERTS
-============================================================ */
+/* ================= ALERTS ================= */
 
 .warning-box {
     background: linear-gradient(135deg, #fffbeb, #fff7ed);
@@ -504,9 +465,7 @@ footer {
     gap: 12px;
 }
 
-/* ============================================================
-   TABS
-============================================================ */
+/* ================= TABS ================= */
 
 .stTabs [data-baseweb="tab-list"] {
     gap: 10px;
@@ -530,18 +489,12 @@ footer {
     color: white !important;
 }
 
-/* ============================================================
-   SIDEBAR
-============================================================ */
+/* ================= SIDEBAR ================= */
 
 div[data-testid="stSidebar"] {
     background:
         radial-gradient(circle at top left, rgba(37, 99, 235, 0.28), transparent 35%),
         linear-gradient(180deg, #0f172a 0%, #111827 100%);
-}
-
-div[data-testid="stSidebar"] [data-testid="stSidebarContent"] {
-    padding-top: 1.4rem;
 }
 
 div[data-testid="stSidebar"] * {
@@ -609,9 +562,8 @@ div[data-testid="stSidebar"] label {
     margin-bottom: 14px;
 }
 
-/* Buttons */
-.stButton > button,
-.stDownloadButton > button {
+.stDownloadButton > button,
+.stButton > button {
     border-radius: 15px !important;
     border: 1px solid #dbeafe !important;
     background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
@@ -621,13 +573,6 @@ div[data-testid="stSidebar"] label {
     box-shadow: 0 10px 25px rgba(37, 99, 235, 0.22);
 }
 
-.stDownloadButton > button:hover,
-.stButton > button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 15px 32px rgba(37, 99, 235, 0.28);
-}
-
-/* Dataframes */
 [data-testid="stDataFrame"] {
     border-radius: 20px;
     overflow: hidden;
@@ -635,7 +580,6 @@ div[data-testid="stSidebar"] label {
     box-shadow: 0 10px 28px rgba(15, 23, 42, 0.045);
 }
 
-/* Plotly */
 [data-testid="stPlotlyChart"] {
     background: white;
     border-radius: 24px;
@@ -644,7 +588,6 @@ div[data-testid="stSidebar"] label {
     box-shadow: var(--shadow-card);
 }
 
-/* Footer */
 .footer {
     margin-top: 46px;
     padding: 18px 20px;
@@ -657,7 +600,6 @@ div[data-testid="stSidebar"] label {
     box-shadow: 0 8px 22px rgba(15, 23, 42, 0.04);
 }
 
-/* Responsive */
 @media (max-width: 1100px) {
     .hero-grid {
         grid-template-columns: 1fr;
@@ -675,18 +617,60 @@ div[data-testid="stSidebar"] label {
 """, unsafe_allow_html=True)
 
 # ============================================================
-# FONCTIONS UTILITAIRES
+# FONCTIONS EXCEL ROBUSTES
 # ============================================================
 
-@st.cache_data(show_spinner=False)
-def get_sheet_names(file_bytes):
-    return pd.ExcelFile(BytesIO(file_bytes)).sheet_names
+def get_excel_engine(file_name):
+    file_name = file_name.lower()
+
+    if file_name.endswith(".xlsx"):
+        return "openpyxl"
+
+    if file_name.endswith(".xls"):
+        return "xlrd"
+
+    return None
+
+
+def is_valid_excel_file(file_bytes, file_name):
+    file_name = file_name.lower()
+    signature = file_bytes[:8]
+
+    if file_name.endswith(".xlsx"):
+        return signature.startswith(b"PK")
+
+    if file_name.endswith(".xls"):
+        return signature.startswith(b"\xd0\xcf\x11\xe0")
+
+    return False
 
 
 @st.cache_data(show_spinner=False)
-def read_sheet(file_bytes, sheet_name):
-    return pd.read_excel(BytesIO(file_bytes), sheet_name=sheet_name)
+def get_sheet_names(file_bytes, file_name):
+    engine = get_excel_engine(file_name)
 
+    if engine is None:
+        raise ValueError("Format non supporté. Importez un fichier .xlsx ou .xls.")
+
+    return pd.ExcelFile(BytesIO(file_bytes), engine=engine).sheet_names
+
+
+@st.cache_data(show_spinner=False)
+def read_sheet(file_bytes, file_name, sheet_name):
+    engine = get_excel_engine(file_name)
+
+    if engine is None:
+        raise ValueError("Format non supporté. Importez un fichier .xlsx ou .xls.")
+
+    return pd.read_excel(
+        BytesIO(file_bytes),
+        sheet_name=sheet_name,
+        engine=engine
+    )
+
+# ============================================================
+# FONCTIONS UTILITAIRES
+# ============================================================
 
 def normalize_columns(df):
     df = df.copy()
@@ -723,14 +707,17 @@ def find_column(df, possible_names):
 
 def convert_dates(df, columns):
     df = df.copy()
+
     for col in columns:
         if col and col in df.columns:
             df[col] = pd.to_datetime(df[col], errors="coerce")
+
     return df
 
 
 def convert_numeric(df, columns):
     df = df.copy()
+
     for col in columns:
         if col and col in df.columns:
             df[col] = (
@@ -741,6 +728,7 @@ def convert_numeric(df, columns):
                 .str.replace("\u00a0", "", regex=False)
             )
             df[col] = pd.to_numeric(df[col], errors="coerce")
+
     return df
 
 
@@ -896,13 +884,15 @@ def apply_filters(df, filters):
 def apply_date_filter(df, date_col, date_range):
     filtered = df.copy()
 
-    if date_col and date_col in filtered.columns and date_range:
-        if len(date_range) == 2:
-            start_date, end_date = date_range
-            filtered = filtered[
-                (filtered[date_col].dt.date >= start_date) &
-                (filtered[date_col].dt.date <= end_date)
-            ]
+    if not date_col or date_col not in filtered.columns or date_range is None:
+        return filtered
+
+    if isinstance(date_range, tuple) and len(date_range) == 2:
+        start_date, end_date = date_range
+        filtered = filtered[
+            (filtered[date_col].dt.date >= start_date) &
+            (filtered[date_col].dt.date <= end_date)
+        ]
 
     return filtered
 
@@ -991,7 +981,6 @@ def empty_info(message):
         """,
         unsafe_allow_html=True
     )
-
 
 # ============================================================
 # HEADER
@@ -1128,7 +1117,6 @@ with st.sidebar:
 - Dev.
 """)
 
-
 # ============================================================
 # PAGE AVANT IMPORT
 # ============================================================
@@ -1195,19 +1183,41 @@ if uploaded_file is None:
 
     st.stop()
 
-
 # ============================================================
 # LECTURE FICHIER
 # ============================================================
 
 try:
     file_bytes = uploaded_file.getvalue()
-    sheet_names = get_sheet_names(file_bytes)
-except Exception as e:
-    st.error("Erreur lors de la lecture du fichier Excel.")
+    file_name = uploaded_file.name
+
+    if not is_valid_excel_file(file_bytes, file_name):
+        st.error(
+            "Le fichier importé ne semble pas être un vrai fichier Excel valide."
+        )
+        st.info(
+            "Astuce : ouvrez votre fichier dans Excel puis faites "
+            "`Fichier > Enregistrer sous > Classeur Excel (*.xlsx)`."
+        )
+        st.stop()
+
+    sheet_names = get_sheet_names(file_bytes, file_name)
+
+except ImportError as e:
+    st.error("Un moteur Excel requis n’est pas installé.")
+    st.info("Ajoutez ces packages dans requirements.txt : openpyxl et xlrd.")
+    st.code("pip install openpyxl xlrd")
     st.exception(e)
     st.stop()
 
+except Exception as e:
+    st.error("Erreur lors de la lecture du fichier Excel.")
+    st.info(
+        "Vérifiez que le fichier n’est pas corrompu, protégé, ouvert, "
+        "ou simplement renommé en .xlsx sans être un vrai fichier Excel."
+    )
+    st.exception(e)
+    st.stop()
 
 with st.sidebar:
     st.markdown("---")
@@ -1225,22 +1235,24 @@ with st.sidebar:
         index=2 if len(sheet_names) >= 2 else 0
     )
 
-
 df_demandes = pd.DataFrame()
 df_commandes = pd.DataFrame()
 
 try:
     if demande_sheet != "Aucune":
-        df_demandes = normalize_columns(read_sheet(file_bytes, demande_sheet))
+        df_demandes = normalize_columns(
+            read_sheet(file_bytes, file_name, demande_sheet)
+        )
 
     if commande_sheet != "Aucune":
-        df_commandes = normalize_columns(read_sheet(file_bytes, commande_sheet))
+        df_commandes = normalize_columns(
+            read_sheet(file_bytes, file_name, commande_sheet)
+        )
 
 except Exception as e:
     st.error("Erreur pendant la lecture des feuilles sélectionnées.")
     st.exception(e)
     st.stop()
-
 
 # ============================================================
 # MAPPING COLONNES DEMANDES
@@ -1262,7 +1274,6 @@ dem_col_div = find_column(df_demandes, ["Div.", "Div", "Division"])
 if not df_demandes.empty:
     df_demandes = convert_dates(df_demandes, [dem_col_date_da, dem_col_date_lanc])
     df_demandes = convert_numeric(df_demandes, [dem_col_quantite])
-
 
 # ============================================================
 # MAPPING COLONNES COMMANDES
@@ -1295,7 +1306,6 @@ if not df_commandes.empty:
     else:
         df_commandes["Montant estimé"] = 0
 
-
 # ============================================================
 # TABS
 # ============================================================
@@ -1307,7 +1317,6 @@ tab_overview, tab_demandes, tab_commandes, tab_compare, tab_data = st.tabs([
     "Analyse croisée",
     "Données"
 ])
-
 
 # ============================================================
 # TAB 1 - VUE GLOBALE
@@ -1339,6 +1348,7 @@ with tab_overview:
     with col_left:
         if not df_demandes.empty and dem_col_gac:
             data = safe_group_count(df_demandes, dem_col_gac, dem_col_da, 10)
+
             fig = px.bar(
                 data,
                 x="Nombre",
@@ -1356,6 +1366,7 @@ with tab_overview:
     with col_right:
         if not df_commandes.empty and cmd_col_fournisseur:
             data = safe_group_sum(df_commandes, cmd_col_fournisseur, "Montant estimé", 10)
+
             fig = px.bar(
                 data,
                 x="Total",
@@ -1370,7 +1381,6 @@ with tab_overview:
         else:
             empty_info("Aucune donnée commande exploitable pour le graphique fournisseurs.")
 
-
 # ============================================================
 # TAB 2 - DEMANDES
 # ============================================================
@@ -1380,6 +1390,7 @@ with tab_demandes:
 
     if df_demandes.empty:
         st.warning("Aucune feuille de demandes sélectionnée ou feuille vide.")
+
     else:
         with st.sidebar:
             st.markdown("---")
@@ -1389,10 +1400,13 @@ with tab_demandes:
 
             if dem_col_gac:
                 dem_filters[dem_col_gac] = st.multiselect("GAc", get_unique_values(df_demandes, dem_col_gac))
+
             if dem_col_demandeur:
                 dem_filters[dem_col_demandeur] = st.multiselect("Demandeur", get_unique_values(df_demandes, dem_col_demandeur))
+
             if dem_col_createur:
                 dem_filters[dem_col_createur] = st.multiselect("Créateur", get_unique_values(df_demandes, dem_col_createur))
+
             if dem_col_div:
                 dem_filters[dem_col_div] = st.multiselect("Division", get_unique_values(df_demandes, dem_col_div))
 
@@ -1406,7 +1420,8 @@ with tab_demandes:
                     "Période Date DA",
                     value=(min_date, max_date),
                     min_value=min_date,
-                    max_value=max_date
+                    max_value=max_date,
+                    key="dem_date_range"
                 )
 
         df_dem_filtered = apply_filters(df_demandes, dem_filters)
@@ -1435,6 +1450,7 @@ with tab_demandes:
         with g1:
             if dem_col_div:
                 data = safe_group_count(df_dem_filtered, dem_col_div, dem_col_da, 15)
+
                 fig = px.bar(
                     data,
                     x=dem_col_div,
@@ -1444,8 +1460,10 @@ with tab_demandes:
                     color_discrete_sequence=PLOTLY_COLORS
                 )
                 show_chart(fig, "demandes_division")
+
             elif dem_col_gac:
                 data = safe_group_count(df_dem_filtered, dem_col_gac, dem_col_da, 15)
+
                 fig = px.bar(
                     data,
                     x=dem_col_gac,
@@ -1455,12 +1473,14 @@ with tab_demandes:
                     color_discrete_sequence=PLOTLY_COLORS
                 )
                 show_chart(fig, "demandes_gac")
+
             else:
                 empty_info("Colonne Division ou GAc non disponible.")
 
         with g2:
             if dem_col_designation:
                 data = safe_group_count(df_dem_filtered, dem_col_designation, None, 15)
+
                 fig = px.bar(
                     data,
                     x="Nombre",
@@ -1480,6 +1500,7 @@ with tab_demandes:
         with g3:
             if dem_col_demandeur:
                 data = safe_group_count(df_dem_filtered, dem_col_demandeur, dem_col_da, 15)
+
                 fig = px.bar(
                     data,
                     x="Nombre",
@@ -1506,6 +1527,7 @@ with tab_demandes:
 
                 if not trend.empty:
                     trend[dem_col_date_da] = trend[dem_col_date_da].astype(str)
+
                     fig = px.line(
                         trend,
                         x=dem_col_date_da,
@@ -1532,7 +1554,6 @@ with tab_demandes:
             "Télécharger les demandes filtrées"
         )
 
-
 # ============================================================
 # TAB 3 - COMMANDES
 # ============================================================
@@ -1542,6 +1563,7 @@ with tab_commandes:
 
     if df_commandes.empty:
         st.warning("Aucune feuille de commandes sélectionnée ou feuille vide.")
+
     else:
         with st.sidebar:
             st.markdown("---")
@@ -1551,10 +1573,13 @@ with tab_commandes:
 
             if cmd_col_fournisseur:
                 cmd_filters[cmd_col_fournisseur] = st.multiselect("Fournisseur", get_unique_values(df_commandes, cmd_col_fournisseur))
+
             if cmd_col_div:
                 cmd_filters[cmd_col_div] = st.multiselect("Division commande", get_unique_values(df_commandes, cmd_col_div))
+
             if cmd_col_gac:
                 cmd_filters[cmd_col_gac] = st.multiselect("GAc commande", get_unique_values(df_commandes, cmd_col_gac))
+
             if cmd_col_devise:
                 cmd_filters[cmd_col_devise] = st.multiselect("Devise", get_unique_values(df_commandes, cmd_col_devise))
 
@@ -1568,7 +1593,8 @@ with tab_commandes:
                     "Période Date document",
                     value=(min_date, max_date),
                     min_value=min_date,
-                    max_value=max_date
+                    max_value=max_date,
+                    key="cmd_date_range"
                 )
 
         df_cmd_filtered = apply_filters(df_commandes, cmd_filters)
@@ -1597,6 +1623,7 @@ with tab_commandes:
         with g1:
             if cmd_col_fournisseur:
                 data = safe_group_sum(df_cmd_filtered, cmd_col_fournisseur, "Montant estimé", 15)
+
                 fig = px.bar(
                     data,
                     x="Total",
@@ -1614,6 +1641,7 @@ with tab_commandes:
         with g2:
             if cmd_col_designation:
                 data = safe_group_sum(df_cmd_filtered, cmd_col_designation, "Montant estimé", 15)
+
                 fig = px.bar(
                     data,
                     x="Total",
@@ -1633,6 +1661,7 @@ with tab_commandes:
         with g3:
             if cmd_col_div:
                 data = safe_group_sum(df_cmd_filtered, cmd_col_div, "Montant estimé", 15)
+
                 fig = px.pie(
                     data,
                     names=cmd_col_div,
@@ -1642,8 +1671,10 @@ with tab_commandes:
                     color_discrete_sequence=PLOTLY_COLORS
                 )
                 show_chart(fig, "commandes_division")
+
             elif cmd_col_gac:
                 data = safe_group_sum(df_cmd_filtered, cmd_col_gac, "Montant estimé", 15)
+
                 fig = px.pie(
                     data,
                     names=cmd_col_gac,
@@ -1668,6 +1699,7 @@ with tab_commandes:
 
                 if not trend.empty:
                     trend[cmd_col_date] = trend[cmd_col_date].astype(str)
+
                     fig = px.line(
                         trend,
                         x=cmd_col_date,
@@ -1716,7 +1748,6 @@ with tab_commandes:
             "Télécharger les commandes filtrées"
         )
 
-
 # ============================================================
 # TAB 4 - ANALYSE CROISÉE
 # ============================================================
@@ -1726,8 +1757,10 @@ with tab_compare:
 
     if df_demandes.empty or df_commandes.empty:
         st.warning("L’analyse croisée nécessite les deux feuilles : demandes et commandes.")
+
     elif not dem_col_article or not cmd_col_article:
         st.warning("L’analyse croisée nécessite la colonne Article dans les deux feuilles.")
+
     else:
         articles_demandes = set(df_demandes[dem_col_article].dropna().astype(str))
         articles_commandes = set(df_commandes[cmd_col_article].dropna().astype(str))
@@ -1795,7 +1828,6 @@ with tab_compare:
         else:
             st.success("Tous les articles demandés existent dans les commandes.")
 
-
 # ============================================================
 # TAB 5 - DONNÉES
 # ============================================================
@@ -1824,7 +1856,6 @@ with tab_data:
 
             sub_section_title("fi fi-rr-list", "Colonnes détectées commandes")
             st.write(list(df_commandes.columns))
-
 
 # ============================================================
 # FOOTER
