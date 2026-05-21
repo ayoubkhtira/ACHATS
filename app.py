@@ -2129,8 +2129,7 @@ render_html("""
 <div class="info-card">
     <i class="fi fi-rr-file-pdf"></i>
     <span>
-        Téléchargez un rapport PDF professionnel contenant les KPI, les synthèses,
-        l’analyse croisée, la qualité des données et les recommandations.
+        Téléchargez le rapport PDF des résultats
     </span>
 </div>
 """)
