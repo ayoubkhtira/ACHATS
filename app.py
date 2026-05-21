@@ -2,14 +2,16 @@ import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
 import plotly.express as px
+
 from io import BytesIO
+from datetime import datetime
 import html
 import textwrap
-from datetime import datetime
+import re
 
 # PDF
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4, landscape
+from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import cm
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
@@ -69,7 +71,6 @@ render_html("""
     --green-dark: #052e1b;
     --green-main: #0f5132;
     --green-soft: #dcfce7;
-    --green-accent: #22c55e;
     --lime: #84cc16;
     --surface: #ffffff;
     --bg: #f6f8f5;
@@ -526,23 +527,23 @@ def app_header():
                 <div class="header-grid">
                     <div class="header-left">
                         <h1 class="title">
-                            Analysez vos <span>demandes</span>, commandes et fournisseurs.
+                            Analysez vos <span>demandes</span>, commandes et comparatifs techniques.
                         </h1>
-                        <p class="description">CIMENTS DU MAROC</p>
+                        <p class="description">CIMENTS DU MAROC — Achats Analytics</p>
                     </div>
                     <div class="right-panel">
-                        <div class="mini-title">Transformez vos données en décisions, en clics</div>
+                        <div class="mini-title">Transformez vos données SAP Ariba en décisions</div>
                         <div class="funnel">
                             <div class="funnel-row">
                                 <div class="funnel-label"><span class="dot"></span>Importer</div>
                                 <div class="funnel-value">+</div>
                             </div>
                             <div class="funnel-row">
-                                <div class="funnel-label"><span class="dot"></span>Configurer</div>
+                                <div class="funnel-label"><span class="dot"></span>Extraire</div>
                                 <div class="funnel-value">+</div>
                             </div>
                             <div class="funnel-row">
-                                <div class="funnel-label"><span class="dot"></span>Analyser</div>
+                                <div class="funnel-label"><span class="dot"></span>Comparer</div>
                                 <div class="funnel-value">+</div>
                             </div>
                         </div>
@@ -598,27 +599,38 @@ app_header()
 
 def get_excel_engine(file_name):
     file_name = file_name.lower()
+
     if file_name.endswith(".xlsx"):
         return "openpyxl"
+
     if file_name.endswith(".xls"):
         return "xlrd"
+
     return None
 
 
 @st.cache_data(show_spinner=False)
 def get_sheet_names(file_bytes, file_name):
     engine = get_excel_engine(file_name)
+
     if engine is None:
         raise ValueError("Format non supporté. Importez un fichier .xlsx ou .xls.")
+
     return pd.ExcelFile(BytesIO(file_bytes), engine=engine).sheet_names
 
 
 @st.cache_data(show_spinner=False)
 def read_sheet(file_bytes, file_name, sheet_name):
     engine = get_excel_engine(file_name)
+
     if engine is None:
         raise ValueError("Format non supporté. Importez un fichier .xlsx ou .xls.")
-    return pd.read_excel(BytesIO(file_bytes), sheet_name=sheet_name, engine=engine)
+
+    return pd.read_excel(
+        BytesIO(file_bytes),
+        sheet_name=sheet_name,
+        engine=engine
+    )
 
 # ============================================================
 # FONCTIONS UTILITAIRES
@@ -659,14 +671,17 @@ def find_column(df, possible_names):
 
 def convert_dates(df, columns):
     df = df.copy()
+
     for col in columns:
         if col and col in df.columns:
             df[col] = pd.to_datetime(df[col], errors="coerce")
+
     return df
 
 
 def convert_numeric(df, columns):
     df = df.copy()
+
     for col in columns:
         if col and col in df.columns:
             df[col] = (
@@ -677,6 +692,7 @@ def convert_numeric(df, columns):
                 .str.replace("\u00a0", "", regex=False)
             )
             df[col] = pd.to_numeric(df[col], errors="coerce")
+
     return df
 
 
@@ -714,6 +730,7 @@ def get_soft_color(color):
 
 def metric_card(label, value, help_text="", color="#0f5132", icon="fi fi-rr-stats"):
     soft = get_soft_color(color)
+
     render_html(
         f"""
         <div class="metric-card" style="--metric-color:{color}; --metric-soft:{soft};">
@@ -924,7 +941,364 @@ def show_chart(fig, key):
     st.plotly_chart(fig, use_container_width=True, key=key)
 
 # ============================================================
-# FONCTIONS RAPPORT PDF
+# SAP ARIBA - COMPARATIF TECHNIQUE
+# ============================================================
+
+TECHNICAL_IGNORE_HEADERS = {
+    "initial(e)",
+    "historique",
+    "réserve",
+    "reserve",
+    "nom",
+    "",
+    "nan"
+}
+
+
+def clean_cell(value):
+    if pd.isna(value):
+        return ""
+
+    text = str(value)
+    text = html.unescape(text)
+    text = text.replace("\xa0", " ")
+    text = text.replace("\r", "\n")
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r"\n+", "\n", text)
+
+    return text.strip()
+
+
+def normalize_text_for_compare(value):
+    value = clean_cell(value).lower()
+    value = value.replace("-", " ")
+    value = value.replace("_", " ")
+    value = re.sub(r"[^a-z0-9àâçéèêëîïôûùüÿñæœ ]", " ", value)
+    value = re.sub(r"\s+", " ", value)
+    return value.strip()
+
+
+def extract_regex(pattern, text, default=""):
+    match = re.search(pattern, text, flags=re.IGNORECASE | re.MULTILINE | re.DOTALL)
+    if match:
+        return clean_cell(match.group(1))
+    return default
+
+
+def extract_requested_reference(text):
+    ref = extract_regex(r"\bREF\s*[:\-]?\s*([A-Z0-9\-\/\.]+)", text)
+
+    if not ref:
+        ref = extract_regex(r"\bRéférence\s*[:\-]?\s*([A-Z0-9\-\/\.]+)", text)
+
+    return ref
+
+
+def extract_requested_brand(text):
+    marque = extract_regex(r"\bMARQUE\s+([A-Z0-9 \-]+?)(?:\s+POUR|\n|$)", text)
+
+    if not marque:
+        marque = extract_regex(r"\bMarque\s*[:\-]\s*([A-Z0-9 \-]+)", text)
+
+    return marque
+
+
+def extract_requested_designation(text):
+    lines = [clean_cell(x) for x in text.split("\n") if clean_cell(x)]
+
+    designation_lines = []
+
+    for line in lines:
+        line = re.sub(r"^\s*\d+(\.\d+)?\s*", "", line)
+
+        if re.search(r"^DA\s+\d+", line, re.IGNORECASE):
+            continue
+        if re.search(r"^POSTE\s+\d+", line, re.IGNORECASE):
+            continue
+        if re.search(r"^ARTICLE\s+\d+", line, re.IGNORECASE):
+            continue
+
+        designation_lines.append(line)
+
+    return clean_cell(" ".join(designation_lines))
+
+
+def parse_supplier_response(text):
+    response = {
+        "designation_proposee": "",
+        "marque_proposee": "",
+        "reference_proposee": "",
+        "delai_livraison": "",
+        "piece_jointe": ""
+    }
+
+    if not text:
+        return response
+
+    response["designation_proposee"] = extract_regex(
+        r"Désignation\s*:\s*(.*?)(?:\n\s*Marque\s*:|\n\s*Référence\s*:|\n\s*Delai|\n\s*Délai|$)",
+        text
+    )
+
+    response["marque_proposee"] = extract_regex(
+        r"Marque\s*:\s*(.*?)(?:\n\s*Référence\s*:|\n\s*Delai|\n\s*Délai|$)",
+        text
+    )
+
+    response["reference_proposee"] = extract_regex(
+        r"Référence\s*:\s*(.*?)(?:\n\s*Delai|\n\s*Délai|$)",
+        text
+    )
+
+    response["delai_livraison"] = extract_regex(
+        r"D[ée]lai\s+de\s+livraison\s*:\s*(.*?)(?:\n|$)",
+        text
+    )
+
+    attachment = extract_regex(
+        r"([A-Za-z0-9_\- ]+\.(?:pdf|PDF|docx|DOCX|xlsx|XLSX|xls|XLS))",
+        text
+    )
+    response["piece_jointe"] = attachment
+
+    return response
+
+
+def technical_status_auto(reference_demandee, reference_proposee, marque_demandee, marque_proposee):
+    ref_d = normalize_text_for_compare(reference_demandee)
+    ref_p = normalize_text_for_compare(reference_proposee)
+
+    marque_d = normalize_text_for_compare(marque_demandee)
+    marque_p = normalize_text_for_compare(marque_proposee)
+
+    ref_ok = False
+    marque_ok = False
+
+    if ref_d and ref_p:
+        ref_ok = ref_d in ref_p or ref_p in ref_d
+
+    if marque_d and marque_p:
+        marque_ok = marque_d in marque_p or marque_p in marque_d
+
+    if ref_ok and marque_ok:
+        return "Conforme"
+
+    if ref_ok and not marque_d:
+        return "Conforme - référence OK"
+
+    if ref_ok and not marque_ok:
+        return "À vérifier - marque différente"
+
+    if not ref_d and (marque_ok or marque_p):
+        return "À vérifier - référence demandée absente"
+
+    if not ref_p:
+        return "Non renseigné"
+
+    return "Non conforme / à vérifier"
+
+
+def read_sap_ariba_export(file_bytes, file_name):
+    engine = get_excel_engine(file_name)
+
+    try:
+        if engine:
+            df = pd.read_excel(BytesIO(file_bytes), header=None, engine=engine)
+            return df.fillna("")
+    except Exception:
+        pass
+
+    try:
+        tables = pd.read_html(BytesIO(file_bytes))
+        if tables:
+            max_cols = max(len(t.columns) for t in tables)
+            normalized_tables = []
+
+            for t in tables:
+                t = t.copy()
+                while len(t.columns) < max_cols:
+                    t[f"extra_{len(t.columns)}"] = ""
+                normalized_tables.append(t)
+
+            df = pd.concat(normalized_tables, ignore_index=True)
+            return df.fillna("")
+    except Exception:
+        pass
+
+    raise ValueError(
+        "Impossible de lire l’export SAP Ariba. Vérifie que le fichier est bien un export Excel/HTML SAP Ariba."
+    )
+
+
+def detect_supplier_headers(df):
+    supplier_headers = {}
+    search_rows = min(15, len(df))
+
+    for row_idx in range(search_rows):
+        row = df.iloc[row_idx].astype(str).tolist()
+
+        for col_idx, value in enumerate(row):
+            val = clean_cell(value)
+            low = val.lower().strip()
+
+            if not val:
+                continue
+
+            if low in TECHNICAL_IGNORE_HEADERS:
+                continue
+
+            if "srm" in low or "fournisseur" in low or "supplier" in low:
+                supplier_headers[col_idx] = val
+
+    return supplier_headers
+
+
+def extract_ariba_technical_comparison(file_bytes, file_name):
+    raw_df = read_sap_ariba_export(file_bytes, file_name)
+    raw_df = raw_df.applymap(clean_cell)
+
+    supplier_headers = detect_supplier_headers(raw_df)
+
+    records = []
+
+    for row_idx in range(len(raw_df)):
+        row_values = raw_df.iloc[row_idx].tolist()
+
+        request_col_idx = None
+        request_text = ""
+
+        for col_idx, value in enumerate(row_values):
+            text = clean_cell(value)
+
+            if (
+                re.search(r"\bDA\s+\d+", text, re.IGNORECASE)
+                and re.search(r"\bPOSTE\s+\d+", text, re.IGNORECASE)
+                and re.search(r"\bARTICLE\s+\d+", text, re.IGNORECASE)
+            ):
+                request_col_idx = col_idx
+                request_text = text
+                break
+
+        if request_col_idx is None:
+            continue
+
+        da = extract_regex(r"\bDA\s+(\d+)", request_text)
+        poste = extract_regex(r"\bPOSTE\s+(\d+)", request_text)
+        article = extract_regex(r"\bARTICLE\s+([A-Z0-9\-\/\.]+)", request_text)
+
+        designation_demandee = extract_requested_designation(request_text)
+        reference_demandee = extract_requested_reference(request_text)
+        marque_demandee = extract_requested_brand(request_text)
+
+        current_supplier_headers = supplier_headers.copy()
+
+        if not current_supplier_headers:
+            possible_supplier_cols = [
+                idx for idx in range(len(row_values))
+                if idx != request_col_idx and clean_cell(row_values[idx])
+            ]
+            current_supplier_headers = {
+                idx: f"Fournisseur colonne {idx + 1}"
+                for idx in possible_supplier_cols
+            }
+
+        for supplier_col_idx, supplier_name in current_supplier_headers.items():
+            if supplier_col_idx >= len(row_values):
+                continue
+
+            response_text = clean_cell(row_values[supplier_col_idx])
+
+            if not response_text:
+                continue
+
+            parsed_response = parse_supplier_response(response_text)
+
+            if not any([
+                parsed_response["designation_proposee"],
+                parsed_response["marque_proposee"],
+                parsed_response["reference_proposee"],
+                parsed_response["delai_livraison"],
+                parsed_response["piece_jointe"]
+            ]):
+                continue
+
+            statut = technical_status_auto(
+                reference_demandee,
+                parsed_response["reference_proposee"],
+                marque_demandee,
+                parsed_response["marque_proposee"]
+            )
+
+            records.append({
+                "DA": da,
+                "Poste": poste,
+                "Article": article,
+                "Désignation demandée": designation_demandee,
+                "Marque demandée": marque_demandee,
+                "Référence demandée": reference_demandee,
+                "Fournisseur": supplier_name,
+                "Désignation proposée": parsed_response["designation_proposee"],
+                "Marque proposée": parsed_response["marque_proposee"],
+                "Référence proposée": parsed_response["reference_proposee"],
+                "Délai de livraison": parsed_response["delai_livraison"],
+                "Pièce jointe": parsed_response["piece_jointe"],
+                "Statut technique auto": statut,
+                "Décision acheteur": "À compléter"
+            })
+
+    return pd.DataFrame(records)
+
+
+def build_ariba_wide_comparison(df_long):
+    if df_long.empty:
+        return pd.DataFrame()
+
+    index_cols = [
+        "DA",
+        "Poste",
+        "Article",
+        "Désignation demandée",
+        "Marque demandée",
+        "Référence demandée"
+    ]
+
+    value_cols = [
+        "Désignation proposée",
+        "Marque proposée",
+        "Référence proposée",
+        "Délai de livraison",
+        "Statut technique auto"
+    ]
+
+    temp = df_long.copy()
+    parts = []
+
+    for value_col in value_cols:
+        pivot = temp.pivot_table(
+            index=index_cols,
+            columns="Fournisseur",
+            values=value_col,
+            aggfunc="first"
+        )
+
+        pivot.columns = [f"{value_col} - {col}" for col in pivot.columns]
+        parts.append(pivot)
+
+    result = pd.concat(parts, axis=1).reset_index()
+    return result
+
+
+def export_ariba_comparison_excel(df_long, df_wide):
+    output = BytesIO()
+
+    with pd.ExcelWriter(output, engine="openpyxl") as writer:
+        df_long.to_excel(writer, index=False, sheet_name="Comparatif détaillé")
+        df_wide.to_excel(writer, index=False, sheet_name="Comparatif large")
+
+    return output.getvalue()
+
+# ============================================================
+# RAPPORT PDF
 # ============================================================
 
 def pdf_safe_text(value, default=""):
@@ -1253,26 +1627,6 @@ def generate_pdf_report(
         story.append(create_pdf_table(analyse_data))
         story.append(Spacer(1, 12))
 
-        if articles_non_commandes:
-            non_cmd_df = df_dem_filtered[
-                df_dem_filtered[dem_col_article].astype(str).isin(articles_non_commandes)
-            ]
-
-            selected_cols = [
-                dem_col_da,
-                dem_col_article,
-                dem_col_designation,
-                dem_col_demandeur,
-                dem_col_quantite,
-                dem_col_date_da
-            ]
-
-            story.append(Paragraph("Extrait des articles demandés mais non commandés", normal_style))
-            story.append(create_pdf_table(
-                dataframe_to_pdf_table(non_cmd_df, selected_cols, max_rows=10),
-                "#ef4444",
-                7
-            ))
     else:
         story.append(Paragraph(
             "L’analyse croisée n’est pas disponible. Vérifiez que les deux feuilles contiennent une colonne Article.",
@@ -1339,7 +1693,7 @@ with st.sidebar:
             <span>Achats Analytics</span>
         </div>
         <div class="sidebar-brand-subtitle">
-            Import, filtrage et analyse décisionnelle des demandes et commandes achats.
+            Import, filtrage, reporting et génération automatique de comparatifs techniques.
         </div>
     </div>
     """)
@@ -1353,8 +1707,9 @@ with st.sidebar:
     """)
 
     uploaded_file = st.file_uploader(
-        "Importer un fichier Excel",
-        type=["xlsx", "xls"]
+        "Importer un fichier Excel demandes / commandes",
+        type=["xlsx", "xls"],
+        key="main_excel_file"
     )
 
     st.markdown("---")
@@ -1386,6 +1741,15 @@ with st.sidebar:
 - GAc
 - Div.
 - Dev.
+
+**SAP Ariba technique :**
+- DA
+- POSTE
+- ARTICLE
+- Désignation
+- Marque
+- Référence
+- Délai de livraison
 """)
 
 # ============================================================
@@ -1396,7 +1760,7 @@ if uploaded_file is None:
     render_html("""
     <div class="warning-box">
         <i class="fi fi-rr-info"></i>
-        <span>Importez votre fichier Excel pour générer automatiquement vos analyses achats.</span>
+        <span>Importez votre fichier Excel demandes / commandes pour générer automatiquement vos analyses achats.</span>
     </div>
     """)
 
@@ -1436,12 +1800,11 @@ if uploaded_file is None:
         render_html("""
         <div class="card">
             <h4>
-                <span class="pro-icon"><i class="fi fi-rr-search-alt"></i></span>
-                Détection des écarts
+                <span class="pro-icon"><i class="fi fi-rr-table-columns"></i></span>
+                Comparatif technique SAP Ariba
             </h4>
             <p class="small-note">
-                Comparez les articles demandés et commandés afin d’identifier
-                les demandes non transformées et les commandes hors demandes.
+                Importez l’extraction SAP Ariba et générez automatiquement un tableau comparatif technique.
             </p>
         </div>
         """)
@@ -1562,7 +1925,7 @@ if not df_commandes.empty:
         df_commandes["Montant estimé"] = 0
 
 # ============================================================
-# DATAFRAMES FILTRÉS PAR DÉFAUT POUR LE PDF
+# DATAFRAMES FILTRÉS PAR DÉFAUT
 # ============================================================
 
 df_dem_filtered = df_demandes.copy()
@@ -1572,11 +1935,12 @@ df_cmd_filtered = df_commandes.copy()
 # TABS
 # ============================================================
 
-tab_overview, tab_demandes, tab_commandes, tab_compare, tab_data = st.tabs([
+tab_overview, tab_demandes, tab_commandes, tab_compare, tab_ariba_tech, tab_data = st.tabs([
     "Vue globale",
     "Demandes d'achat",
     "Commandes achats",
     "Analyse croisée",
+    "Comparatif technique SAP Ariba",
     "Données"
 ])
 
@@ -2091,7 +2455,192 @@ with tab_compare:
             st.success("Tous les articles demandés existent dans les commandes.")
 
 # ============================================================
-# TAB 5 - DONNÉES
+# TAB 5 - COMPARATIF TECHNIQUE SAP ARIBA
+# ============================================================
+
+with tab_ariba_tech:
+    section_title("fi fi-rr-document-signed", "Création automatique du tableau comparatif technique SAP Ariba")
+
+    render_html("""
+    <div class="info-card">
+        <i class="fi fi-rr-info"></i>
+        <span>
+            Importez l’extraction technique SAP Ariba. La plateforme extrait automatiquement les DA,
+            postes, articles, références, marques, réponses fournisseurs, délais et pièces jointes.
+        </span>
+    </div>
+    """)
+
+    ariba_file = st.file_uploader(
+        "Importer l’extraction SAP Ariba technique",
+        type=["xls", "xlsx"],
+        key="ariba_technical_file"
+    )
+
+    if ariba_file is None:
+        c1, c2, c3 = st.columns(3)
+
+        with c1:
+            render_html("""
+            <div class="card">
+                <h4>
+                    <span class="pro-icon"><i class="fi fi-rr-file-import"></i></span>
+                    Import SAP Ariba
+                </h4>
+                <p class="small-note">
+                    Importez le fichier exporté depuis SAP Ariba contenant la partie technique.
+                </p>
+            </div>
+            """)
+
+        with c2:
+            render_html("""
+            <div class="card">
+                <h4>
+                    <span class="pro-icon"><i class="fi fi-rr-magic-wand"></i></span>
+                    Extraction automatique
+                </h4>
+                <p class="small-note">
+                    Extraction automatique des champs : DA, Poste, Article, Référence, Marque, Fournisseur et Délai.
+                </p>
+            </div>
+            """)
+
+        with c3:
+            render_html("""
+            <div class="card">
+                <h4>
+                    <span class="pro-icon"><i class="fi fi-rr-table-columns"></i></span>
+                    Tableau comparatif
+                </h4>
+                <p class="small-note">
+                    Génération automatique d’un tableau comparatif technique prêt pour analyse.
+                </p>
+            </div>
+            """)
+
+    else:
+        try:
+            ariba_bytes = ariba_file.getvalue()
+            ariba_name = ariba_file.name
+
+            with st.spinner("Extraction automatique du comparatif technique depuis SAP Ariba..."):
+                df_ariba_long = extract_ariba_technical_comparison(ariba_bytes, ariba_name)
+                df_ariba_wide = build_ariba_wide_comparison(df_ariba_long)
+
+            if df_ariba_long.empty:
+                st.warning(
+                    "Aucune ligne technique exploitable n’a été détectée. "
+                    "Vérifie que l’export contient bien les blocs DA / POSTE / ARTICLE et les réponses fournisseurs."
+                )
+
+            else:
+                total_lignes = len(df_ariba_long)
+                total_da = df_ariba_long["DA"].nunique()
+                total_articles = df_ariba_long["Article"].nunique()
+                total_fournisseurs = df_ariba_long["Fournisseur"].nunique()
+
+                conformes = int((df_ariba_long["Statut technique auto"] == "Conforme").sum())
+                taux_conformite = (conformes / total_lignes * 100) if total_lignes > 0 else 0
+
+                c1, c2, c3, c4 = st.columns(4)
+
+                with c1:
+                    metric_card(
+                        "Lignes comparées",
+                        format_number(total_lignes),
+                        "Réponses techniques analysées",
+                        "#0f5132",
+                        "fi fi-rr-list-check"
+                    )
+
+                with c2:
+                    metric_card(
+                        "DA détectées",
+                        format_number(total_da),
+                        "Demandes d’achat extraites",
+                        "#16a34a",
+                        "fi fi-rr-file-invoice"
+                    )
+
+                with c3:
+                    metric_card(
+                        "Articles",
+                        format_number(total_articles),
+                        "Articles techniques comparés",
+                        "#84cc16",
+                        "fi fi-rr-box"
+                    )
+
+                with c4:
+                    metric_card(
+                        "Taux conformité",
+                        f"{taux_conformite:.1f}%",
+                        "Selon référence et marque",
+                        "#f59e0b",
+                        "fi fi-rr-shield-check"
+                    )
+
+                sub_section_title("fi fi-rr-chart-pie-alt", "Répartition des statuts techniques")
+
+                status_data = (
+                    df_ariba_long["Statut technique auto"]
+                    .value_counts()
+                    .reset_index()
+                )
+                status_data.columns = ["Statut", "Nombre"]
+
+                fig = px.pie(
+                    status_data,
+                    names="Statut",
+                    values="Nombre",
+                    title="Statuts techniques automatiques",
+                    hole=0.55,
+                    color_discrete_sequence=PLOTLY_COLORS
+                )
+
+                show_chart(fig, "ariba_technical_status")
+
+                sub_section_title("fi fi-rr-table", "Tableau comparatif technique détaillé")
+
+                st.dataframe(
+                    df_ariba_long,
+                    use_container_width=True,
+                    height=420
+                )
+
+                sub_section_title("fi fi-rr-table-columns", "Tableau comparatif technique large")
+
+                if df_ariba_wide.empty:
+                    empty_info("Impossible de générer le format large du comparatif.")
+                else:
+                    st.dataframe(
+                        df_ariba_wide,
+                        use_container_width=True,
+                        height=420
+                    )
+
+                sub_section_title("fi fi-rr-download", "Export du comparatif technique")
+
+                excel_ariba = export_ariba_comparison_excel(df_ariba_long, df_ariba_wide)
+
+                st.download_button(
+                    label="📥 Télécharger le tableau comparatif technique Excel",
+                    data=excel_ariba,
+                    file_name=f"comparatif_technique_sap_ariba_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    use_container_width=True
+                )
+
+        except Exception as e:
+            st.error("Erreur pendant l’extraction du comparatif technique SAP Ariba.")
+            st.info(
+                "Vérifie que le fichier correspond bien à une extraction SAP Ariba contenant la section Technique."
+            )
+            st.exception(e)
+
+# ============================================================
+# TAB 6 - DONNÉES
 # ============================================================
 
 with tab_data:
@@ -2129,7 +2678,8 @@ render_html("""
 <div class="info-card">
     <i class="fi fi-rr-file-pdf"></i>
     <span>
-        Téléchargez le rapport PDF des résultats
+        Téléchargez un rapport PDF professionnel contenant les KPI, les synthèses,
+        l’analyse croisée, la qualité des données et les recommandations.
     </span>
 </div>
 """)
